@@ -1,0 +1,50 @@
+this notes covers backend and frontend
+
+notes untuk autogenerate document DN (delivery note)
+*dn date untuk kapan itu digenerate
+* dn no itu diawali dengan 
+-> <b> dn
+-> -
+  2 digit tahun 
+  2045 ini apa? 
+->
+-> delivery date ini untuk schedule pengiriman?
+-> picked by tidak mst_company_division
+
+// sisi kiri
+-> shipper (bold). -> Canadian Alliance Terminals Inc.
+-> Address ->  4327 Salish Sea Dr Unit 600, Delta, BC V4M 0C6
+-> Contact Person: (pihak CA, kosong)
+-> Contact Number: (pihak CA, kosong)
+
+// sisi kanan
+-> Consignee: Dong Phuong Distributor (company penerima?)
+-> Address: 14818 131 Ave NW, Edmonton, AB T5L 4Y3 (alamat pengiriman. apakah ini fixed begini terus atau tidak?)
+-> Contact Person: Contact Person: Coco Wu (PIC nama penerima. apakah ini fixed begini terus atau tidak?)
+-> Contact Number: Contact Number: (780)-447-2883 (phone number penerima. apakah ini fixed begini terus atau tidak?)
+
+//table 
+-> total pallets | (ini satu palet yahng dikirim atau cuma mau bilang kalau dia datang dari satu palet?)
+-> SKU | (ini punya callsign SKU Sendiri?)
+-> NAME OF PRODUCT | (ini sama dengan yang ada di i2i?)
+-> QUANTITY | lihat satuannya apa. 
+-> UNIT | (cases itu carton kan? ada unit lain selain ini?)
+-> BEST BEFORE | (apakah best before date ini sesuai dengan yang ada di realisasi? apakah barang masuk selalu ada reportnya dari warehousenya?)
+-> CONTAINER NO | (ini beneran dipake gak? )
+(kalau masukkin batch code bisa?)
+
+
+====================== 20251007 meeting ICA 
+-- > integrate ke Canadian alliance. punya API.
+-- > notifikasi barang masuk 
+-- > flavor based SKU
+-- > system ambil barang pakai pos. generate QR code, nanti isinya webpage isi batch mana aja. diambil sesuai batch
+-- > cek quickbook bisa integrate accounting 
+
+
+====================== 20251009 meeting biweekly
+-- > bisakah logistik provide data part off di realisasi untuk snack dan seasoning untuk bantu provide autofill?
+-- > akan coba dikomunikasikan. PIC FS ke mbak Putri Logistik. PIC Snack Della
+-- > untuk data akan diprovide oleh pak tripomo.
+-- > untuk master data gimana ya?
+--> cbt crb sby
