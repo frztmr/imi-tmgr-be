@@ -32,11 +32,11 @@ const authController = {
     loginReady: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ' + ' Auth Login  =>';
-        let msg = 'im ready';
+        let msg = 'Whenever you ready!';
         let stats = 200;
-        let ready = false;
+        let ready = true;
         // let ready: boolean = true
-        res.status(stats).send({ msg, stats, ready });
+        res.status(stats).send({ msg, ready });
         console.log(timestamp, " Check login availability. Is ready :", ready);
         // dbIod.query(dbIodQuery, paramQuery, async (error: Error, results: Response) => {})
     }),
@@ -146,7 +146,10 @@ const authController = {
     }),
     keepLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
-        let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => Keep_login =>';
+        let timestamp = yellowTerminal
+            + date.toLocaleDateString('id')
+            + ' ' + date.toLocaleTimeString('id')
+            + ' => Keep_login =>';
         try {
             if (req.cookies) {
                 const userData = req.dataToken;

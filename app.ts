@@ -25,7 +25,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import { dbIod, dbHots, dbPgMainQuery, dbPgMain} from './config/db';
+import { dbIod, dbHots, dbPgMainQuery, dbPgMain } from './config/db';
 
 // import { error } from "console";
 
@@ -53,10 +53,13 @@ App.use(cors({
     //di bawah ini adalah alamat yang hanya diizinkan
     origin: [
 
+        // Ini deploy di laptop sendiri
         "http://localhost",
         "http://localhost/",
         "http://localhost:80",
-
+        "http://localhost:8989/login",
+        
+        // Ini deploy di 110
         "http://172.16.32.110",
         "http://172.16.32.110/",
         "http://172.16.32.110:80",
@@ -108,6 +111,7 @@ App.listen(PORT, () => {
 
 //here all below the initiation Mysql database connection 
 
+// ini untuk databse IOD
 dbIod.getConnection((error: any, connection: any) => {
     if (error) {
         consoleReverse(
@@ -125,6 +129,7 @@ dbIod.getConnection((error: any, connection: any) => {
     }
 })
 
+// ini untuk databse IOD
 dbHots.getConnection((error: any, connection: any) => {
     if (error) {
         consoleReverse(
@@ -147,14 +152,14 @@ dbPgMain.connect()
     .then(client => {
         consoleReverse(
             mainLocation, timestamp,
-            ` DB inventory_stock PostgreSQL has been connected `,
+            ` DB imi_tmgr PostgreSQL has been connected `,
             colorTx.Green, colorBg.Green
         )
         client.release();
     })
     .catch(err => consoleReverse(
         mainLocation, timestamp,
-        ` Error database inventory_stock PostgreSQL on initiate connection ${err} `,
+        ` Error database imi_tmgr PostgreSQL on initiate connection ${err} `,
         colorTx.White, colorBg.Red)
     );
 

@@ -44,9 +44,12 @@ App.use((0, cors_1.default)({
     //origin adalah alamat frontend yang mengirimkan request
     //di bawah ini adalah alamat yang hanya diizinkan
     origin: [
+        // Ini deploy di laptop sendiri
         "http://localhost",
         "http://localhost/",
         "http://localhost:80",
+        "http://localhost:8989/login",
+        // Ini deploy di 110
         "http://172.16.32.110",
         "http://172.16.32.110/",
         "http://172.16.32.110:80",
@@ -81,6 +84,7 @@ App.listen(enviroment_1.PORT, () => {
     (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` ICA Stock Mgmt API is running at port: ${enviroment_1.PORT} `, customConsole_1.colorTx.Green, customConsole_1.colorBg.White);
 });
 //here all below the initiation Mysql database connection 
+// ini untuk databse IOD
 db_1.dbIod.getConnection((error, connection) => {
     if (error) {
         (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` Error database IOD on initiate connection ${error} `, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
@@ -89,6 +93,7 @@ db_1.dbIod.getConnection((error, connection) => {
         (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` DB IOD has been connected ${connection.threadId}  `, customConsole_1.colorTx.Green, customConsole_1.colorBg.Green);
     }
 });
+// ini untuk databse IOD
 db_1.dbHots.getConnection((error, connection) => {
     if (error) {
         (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` Error database Hots on initiate connection ${error} `, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
@@ -100,10 +105,10 @@ db_1.dbHots.getConnection((error, connection) => {
 // this is postgresql database connection
 db_1.dbPgMain.connect()
     .then(client => {
-    (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` DB inventory_stock PostgreSQL has been connected `, customConsole_1.colorTx.Green, customConsole_1.colorBg.Green);
+    (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` DB imi_tmgr PostgreSQL has been connected `, customConsole_1.colorTx.Green, customConsole_1.colorBg.Green);
     client.release();
 })
-    .catch(err => (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` Error database inventory_stock PostgreSQL on initiate connection ${err} `, customConsole_1.colorTx.White, customConsole_1.colorBg.Red));
+    .catch(err => (0, customConsole_1.consoleReverse)(mainLocation, timestamp, ` Error database imi_tmgr PostgreSQL on initiate connection ${err} `, customConsole_1.colorTx.White, customConsole_1.colorBg.Red));
 /*
 // wanna use SSL?
 const server = http.createServer((req, res) => {

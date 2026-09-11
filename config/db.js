@@ -19,7 +19,7 @@ exports.dbIod = (0, mysql2_1.createPool)(({
     host: enviroment_1.db_host_config,
     user: enviroment_1.db_user_config,
     password: enviroment_1.db_pswd_config,
-    database: "your_database_name",
+    database: "iod",
     supportBigNumbers: true,
     bigNumberStrings: true
 }));
@@ -31,17 +31,17 @@ exports.dbHots = (0, mysql2_1.createPool)(({
     host: enviroment_1.db_host_config,
     user: enviroment_1.db_user_config,
     password: enviroment_1.db_pswd_config,
-    database: "your_database_name",
+    database: 'hots',
     supportBigNumbers: true,
     bigNumberStrings: true
 }));
 exports.dbHotsQuery = util.promisify(exports.dbHots.query).bind(exports.dbHots);
 // PostgresSQL ICASTOCK
 exports.dbPgMain = new Pool({
-    user: process.env.DB_PGUSER,
-    host: process.env.DB_PGHOST,
-    database: process.env.DB_PGDATABASE,
-    password: process.env.DB_PGPASSWORD,
-    port: Number(process.env.DB_PGPORT) || 5432,
+    user: process.env.DB_PG_USER_MAIN,
+    host: process.env.DB_PG_HOST_MAIN,
+    database: process.env.DB_PG_NAME_MAIN,
+    password: process.env.DB_PG_PEWD_MAIN,
+    port: Number(process.env.DB_PG_PORT_MAIN) || 5432,
 });
 exports.dbPgMainQuery = util.promisify(exports.dbPgMain.query).bind(exports.dbPgMain);

@@ -15,7 +15,7 @@ export const dbIod: any = createPool(({
     host: db_host_config,
     user: db_user_config,
     password: db_pswd_config,
-    database: "your_database_name",
+    database: "iod",
     supportBigNumbers: true,
     bigNumberStrings: true
 }))
@@ -29,7 +29,7 @@ export const dbHots: any = createPool(({
     host: db_host_config,
     user: db_user_config,
     password: db_pswd_config,
-    database: "your_database_name",
+    database: 'hots',
     supportBigNumbers: true,
     bigNumberStrings: true
 }))
@@ -39,10 +39,10 @@ export const dbHotsQuery: any = util.promisify(dbHots.query).bind(dbHots);
 
 // PostgresSQL ICASTOCK
 export const dbPgMain = new Pool({
-    user: process.env.DB_PGUSER,
-    host: process.env.DB_PGHOST,
-    database: process.env.DB_PGDATABASE,
-    password: process.env.DB_PGPASSWORD,
-    port: Number(process.env.DB_PGPORT) || 5432,
+    user: process.env.DB_PG_USER_MAIN,
+    host: process.env.DB_PG_HOST_MAIN,
+    database: process.env.DB_PG_NAME_MAIN,
+    password: process.env.DB_PG_PEWD_MAIN, 
+    port: Number(process.env.DB_PG_PORT_MAIN) || 5432,
 });
 export const dbPgMainQuery: any = util.promisify(dbPgMain.query).bind(dbPgMain);

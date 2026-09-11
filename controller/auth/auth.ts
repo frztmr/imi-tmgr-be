@@ -1,4 +1,4 @@
- 
+
 import { dbHots, dbPgMainQuery } from '../../config/db'
 import { Request, Response } from 'express';
 import encrypt from '../../config/encrypt'
@@ -27,12 +27,12 @@ const authController = {
         let date = new Date();
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ' + ' Auth Login  =>';
 
-        let msg: string = 'im ready'
+        let msg: string = 'Whenever you ready!'
         let stats: number = 200
-        let ready: boolean = false
+        let ready: boolean = true
         // let ready: boolean = true
 
-        res.status(stats).send({ msg, stats, ready })
+        res.status(stats).send({ msg, ready })
         console.log(timestamp, " Check login availability. Is ready :", ready)
         // dbIod.query(dbIodQuery, paramQuery, async (error: Error, results: Response) => {})
 
@@ -213,7 +213,10 @@ const authController = {
     keepLogin: async (req: any, res: Response) => {
 
         let date = new Date();
-        let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => Keep_login =>';
+        let timestamp = yellowTerminal
+            + date.toLocaleDateString('id')
+            + ' ' + date.toLocaleTimeString('id')
+            + ' => Keep_login =>';
 
 
         try {
