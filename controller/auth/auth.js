@@ -78,11 +78,13 @@ const authController = {
                             else {
                                 if (
                                 //ini res data dari percobaan login
-                                (userLoginAttempt <= loginAttemptPolicy)
+                                ((userLoginAttempt + 1) <= loginAttemptPolicy)
                                     ||
                                         (userLoginAttempt == null)
                                     ||
-                                        (userLoginAttempt == 0)) {
+                                        (userLoginAttempt == 0)
+                                    ||
+                                        (!userLoginAttempt)) {
                                     //ini password yang sudah di hash
                                     let waswod = encrypt_1.default.hashPassword(pswd);
                                     //ini untuk param login
@@ -103,6 +105,16 @@ const authController = {
                                                     ui_configuration: {}
                                                 });
                                                 customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" salah password`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Black);
+                                                const userID = resCheckUser.rows[0].id;
+                                                const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1;
+                                                console.log("updatedAttemptValue", updatedAttemptValue);
+                                                console.log("userLoginAttempt", userLoginAttempt);
+                                                const updateLoginAttemptParam = [(updatedAttemptValue), userID];
+                                                db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
+                                                    if (errUpdateAttept) {
+                                                        customConsole_1.concol.bright("auth", timestamp, `auth error at update login attempt value : ${errUpdateAttept}`, "Red", "Yellow");
+                                                    }
+                                                });
                                             }
                                             else {
                                                 // ini case benar
@@ -116,6 +128,15 @@ const authController = {
                                                     ui_configuration: resLogin.rows[0].ui_configuration
                                                 });
                                                 customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" berhasil`, customConsole_1.colorTx.Green, customConsole_1.colorBg.Black);
+                                                //reset attempt login
+                                                const userID = resCheckUser.rows[0].id;
+                                                const updatedAttemptValue = 0; //ya kan reset 
+                                                const updateLoginAttemptParam = [updatedAttemptValue, userID];
+                                                db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
+                                                    if (errUpdateAttept) {
+                                                        customConsole_1.concol.bright("auth", timestamp, `auth error at reset login attempt value : ${errUpdateAttept}`, "red", "Yellow");
+                                                    }
+                                                });
                                             }
                                         }
                                     });

@@ -5,6 +5,7 @@ import encrypt from '../../config/encrypt'
 import { RowDataPacket } from 'mysql2';
 import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { authSql } from './authSqlQuery'
+import { error } from 'console';
 
 
 /* 
@@ -78,8 +79,8 @@ const authController = {
                                 // that role is exist or not
                             ) {
                                 const userLoginAttempt: number = parseInt(resCheckUser.rows[0].login_attempt)
-                                const isSuspended: Boolean = resCheckUser.rows[0].suspended 
-                                
+                                const isSuspended: Boolean = resCheckUser.rows[0].suspended
+
                                 // cek apakah percobaan login 
                                 // lebih dari batas yang ditentukan
                                 if (isSuspended) {
@@ -91,11 +92,13 @@ const authController = {
                                 } else {
                                     if (
                                         //ini res data dari percobaan login
-                                        (userLoginAttempt <= loginAttemptPolicy)
+                                        ((userLoginAttempt + 1) <= loginAttemptPolicy)
                                         ||
                                         (userLoginAttempt == null)
                                         ||
                                         (userLoginAttempt == 0)
+                                        ||
+                                        (!userLoginAttempt)
                                     ) {
 
                                         //ini password yang sudah di hash
@@ -142,6 +145,29 @@ const authController = {
                                                             colorBg.Black
                                                         );
 
+                                                        const userID = resCheckUser.rows[0].id
+                                                        const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1
+                                                        console.log("updatedAttemptValue", updatedAttemptValue)
+                                                        console.log("userLoginAttempt", userLoginAttempt)
+
+                                                        const updateLoginAttemptParam: [Number, String] = [(updatedAttemptValue), userID]
+
+                                                        dbPgMain.query(
+                                                            authSql.loginUpdateAttemptQuery,
+                                                            updateLoginAttemptParam,
+                                                            (errUpdateAttept: Error) => {
+
+                                                                if (errUpdateAttept) {
+                                                                    concol.bright(
+                                                                        "auth",
+                                                                        timestamp,
+                                                                        `auth error at update login attempt value : ${errUpdateAttept}`,
+                                                                        "Red", "Yellow")
+                                                                }
+                                                            }
+                                                        )
+
+
                                                     } else {
 
                                                         // ini case benar
@@ -163,6 +189,29 @@ const authController = {
                                                             colorTx.Green,
                                                             colorBg.Black
                                                         );
+
+                                                        //reset attempt login
+                                                        const userID = resCheckUser.rows[0].id
+                                                        const updatedAttemptValue = 0 //ya kan reset 
+
+                                                        const updateLoginAttemptParam: [Number, String] = [updatedAttemptValue, userID]
+
+                                                        dbPgMain.query(
+                                                            authSql.loginUpdateAttemptQuery,
+                                                            updateLoginAttemptParam,
+                                                            (errUpdateAttept: Error) => {
+
+                                                                if (errUpdateAttept) {
+                                                                    concol.bright(
+                                                                        "auth",
+                                                                        timestamp,
+                                                                        `auth error at reset login attempt value : ${errUpdateAttept}`,
+                                                                        "red", "Yellow"
+                                                                    )
+                                                                }
+
+                                                            }
+                                                        )
                                                     }
                                                 }
                                             });
