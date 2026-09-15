@@ -50,7 +50,8 @@ const authController = {
             if (uname && pswd) {
                 // cek dulu apakah ada usernya atau tidak? 
                 // cek juga sudah berapa kali dia mencoba untuk login?
-                db_1.dbPgMainQuery.query(authSqlQuery_1.authSql.checkUser, sqlParamCheckUser, (errCheckUser, resCheckUser) => {
+                db_1.dbPgMain.query(authSqlQuery_1.authSql.checkUser, sqlParamCheckUser, (errCheckUser, resCheckUser) => {
+                    console.log("resCheckUser.rows[0]", resCheckUser.rows[0]);
                     if (errCheckUser) {
                         res.status(500).send("Error 500 at login");
                         console.log(timestamp, "Error 500 at login", errCheckUser);
@@ -125,7 +126,8 @@ const authController = {
                         }
                         else {
                             //salah password, tidak ada data ditemukan 
-                            let msg = " username is not exist";
+                            // let msg: string = " username is not exist";
+                            let msg = "invalid credentials";
                             let data = {};
                             res.status(201).send({ msg, data });
                             customConsole_1.concol.bright(location, timestamp, msg, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.White);

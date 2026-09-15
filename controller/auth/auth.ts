@@ -1,5 +1,5 @@
 
-import { dbHots, dbPgMainQuery } from '../../config/db'
+import { dbHots, dbPgMain, dbPgMainQuery } from '../../config/db'
 import { Request, Response } from 'express';
 import encrypt from '../../config/encrypt'
 import { RowDataPacket } from 'mysql2';
@@ -54,12 +54,14 @@ const authController = {
             let { uname, pswd }: RequestBody = req.body;
             let sqlParamCheckUser: [string] = [uname];
 
+
             if (uname && pswd) {
 
                 // cek dulu apakah ada usernya atau tidak? 
                 // cek juga sudah berapa kali dia mencoba untuk login?
-                dbPgMainQuery.query(authSql.checkUser, sqlParamCheckUser,
+                dbPgMain.query(authSql.checkUser, sqlParamCheckUser,
                     (errCheckUser: Error, resCheckUser: any) => {
+                        console.log("resCheckUser.rows[0]", resCheckUser.rows[0])
 
                         if (errCheckUser) {
                             res.status(500).send("Error 500 at login")
@@ -183,7 +185,8 @@ const authController = {
 
                             } else {
                                 //salah password, tidak ada data ditemukan 
-                                let msg: string = " username is not exist";
+                                // let msg: string = " username is not exist";
+                                let msg: string = "invalid credentials";
                                 let data: any = {};
 
                                 res.status(201).send({ msg, data });
