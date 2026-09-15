@@ -78,106 +78,114 @@ const authController = {
                                 // that role is exist or not
                             ) {
                                 const userLoginAttempt: number = parseInt(resCheckUser.rows[0].login_attempt)
-                                console.log("userLoginAttempt , login_attempt |", userLoginAttempt, " , ", login_attempt)
+                                const isSuspended: Boolean = resCheckUser.rows[0].suspended 
+                                
                                 // cek apakah percobaan login 
                                 // lebih dari batas yang ditentukan
-                                if (
-                                    //ini res data dari percobaan login
-                                    (userLoginAttempt <= loginAttemptPolicy)
-                                    ||
-                                    (userLoginAttempt == null)
-                                    ||
-                                    (userLoginAttempt == 0)
-                                ) {
+                                if (isSuspended) {
+                                    res.status(201).send({
+                                        msg: "Cannot Proceed Login, Please contact your Team administrator",
+                                        data: {},
+                                        ui_configuration: {}
+                                    });
+                                } else {
+                                    if (
+                                        //ini res data dari percobaan login
+                                        (userLoginAttempt <= loginAttemptPolicy)
+                                        ||
+                                        (userLoginAttempt == null)
+                                        ||
+                                        (userLoginAttempt == 0)
+                                    ) {
 
-                                    //ini password yang sudah di hash
-                                    let waswod: string = encrypt.hashPassword(pswd);
+                                        //ini password yang sudah di hash
+                                        let waswod: string = encrypt.hashPassword(pswd);
 
-                                    //ini untuk param login
-                                    let sqlParamLogin: [string, string] = [uname, waswod];
+                                        //ini untuk param login
+                                        let sqlParamLogin: [string, string] = [uname, waswod];
 
-                                    dbPgMain.query(
-                                        authSql.loginQuery,
-                                        sqlParamLogin,
-                                        (errLogin: Error, resLogin: any) => {
+                                        dbPgMain.query(
+                                            authSql.loginQuery,
+                                            sqlParamLogin,
+                                            (errLogin: Error, resLogin: any) => {
 
 
-                                            if (errLogin) {
+                                                if (errLogin) {
 
-                                                res.status(500).send("Error 500 at login");
-                                                console.log(
-                                                    timestamp,
-                                                    "Error 500 at login errLogin",
-                                                    errLogin
-                                                );
-
-                                            } else {
-
-                                                //cek hasil login apakah username 
-                                                // dan password benar atau tidak
-
-                                                if (resLogin.rows.length <= 0) {
-
-                                                    // ini case salah password
-
-                                                    res.status(201).send({
-                                                        msg: "wrong password",
-                                                        data: {},
-                                                        ui_configuration: {}
-                                                    });
-
-                                                    concol.plain(
-                                                        location,
+                                                    res.status(500).send("Error 500 at login");
+                                                    console.log(
                                                         timestamp,
-                                                        `=> login "${uname}" salah password`,
-                                                        colorTx.Red,
-                                                        colorBg.Black
+                                                        "Error 500 at login errLogin",
+                                                        errLogin
                                                     );
 
                                                 } else {
 
-                                                    // ini case benar
-                                                    /* data comment
-                                                    data ini akan dilempar ke frontend tanpa enkripsi 
-                                                    dan akan disimpan di global state redux
-                                                    */
+                                                    //cek hasil login apakah username 
+                                                    // dan password benar atau tidak
 
-                                                    res.status(200).send({
-                                                        msg: `welcome `,
-                                                        data: {},
-                                                        ui_configuration: resLogin.rows[0].ui_configuration
-                                                    });
+                                                    if (resLogin.rows.length <= 0) {
 
-                                                    concol.plain(
-                                                        location,
-                                                        timestamp,
-                                                        `=> login "${uname}" berhasil`,
-                                                        colorTx.Green,
-                                                        colorBg.Black
-                                                    );
+                                                        // ini case salah password
+
+                                                        res.status(201).send({
+                                                            msg: "wrong password",
+                                                            data: {},
+                                                            ui_configuration: {}
+                                                        });
+
+                                                        concol.plain(
+                                                            location,
+                                                            timestamp,
+                                                            `=> login "${uname}" salah password`,
+                                                            colorTx.Red,
+                                                            colorBg.Black
+                                                        );
+
+                                                    } else {
+
+                                                        // ini case benar
+                                                        /* data comment
+                                                        data ini akan dilempar ke frontend tanpa enkripsi 
+                                                        dan akan disimpan di global state redux
+                                                        */
+
+                                                        res.status(200).send({
+                                                            msg: `welcome `,
+                                                            data: {},
+                                                            ui_configuration: resLogin.rows[0].ui_configuration
+                                                        });
+
+                                                        concol.plain(
+                                                            location,
+                                                            timestamp,
+                                                            `=> login "${uname}" berhasil`,
+                                                            colorTx.Green,
+                                                            colorBg.Black
+                                                        );
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
 
-                                } else {
+                                    } else {
 
-                                    // this case will not allow user that 
-                                    // has been reaching login attempt
+                                        // this case will not allow user that 
+                                        // has been reaching login attempt
 
-                                    // ini case percobaan login melampaui yang diizinkan.
-                                    let msg: string = `Too many login attempt! Please reset your password! `;
-                                    let data: any = {};
+                                        // ini case percobaan login melampaui yang diizinkan.
+                                        let msg: string = `Too many login attempt! Please reset your password! `;
+                                        let data: any = {};
 
-                                    res.status(201).send({ msg, data });
-                                    concol.bright(
-                                        location,
-                                        timestamp,
-                                        msg,
-                                        colorTx.Yellow,
-                                        colorBg.White
-                                    );
+                                        res.status(201).send({ msg, data });
+                                        concol.bright(
+                                            location,
+                                            timestamp,
+                                            msg,
+                                            colorTx.Yellow,
+                                            colorBg.White
+                                        );
+                                    }
                                 }
-
 
                             } else {
                                 //salah password, tidak ada data ditemukan 
