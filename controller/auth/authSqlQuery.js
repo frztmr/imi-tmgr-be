@@ -14,7 +14,16 @@ exports.authSql = {
         u.uname = $1  
     LIMIT 1;`,
     loginQuery: ` 
-    -- your query here;
+    SELECT
+        *
+    FROM
+        auth.users u
+    LEFT JOIN auth.sesi s ON
+        u.id = s.user_id
+    WHERE
+        u.uname = $1
+        AND u.pswd = $2
+    AND u.suspended IS NOT TRUE;
     `,
     KeepLoginQuery: ` 
     -- your query here;

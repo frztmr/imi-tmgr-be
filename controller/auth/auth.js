@@ -43,7 +43,8 @@ const authController = {
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id');
-        const login_attempt = process.env.SECURITY_TRIAL_LOGIN || 5; // defined agreement of how many attempt
+        const login_attempt = process.env.SECURITY_TRIAL_LOGIN || 4; // defined agreement of how many attempt
+        const loginAttemptPolicy = parseInt(login_attempt);
         if (req.body) {
             let { uname, pswd } = req.body;
             let sqlParamCheckUser = [uname];
@@ -51,7 +52,6 @@ const authController = {
                 // cek dulu apakah ada usernya atau tidak? 
                 // cek juga sudah berapa kali dia mencoba untuk login?
                 db_1.dbPgMain.query(authSqlQuery_1.authSql.checkUser, sqlParamCheckUser, (errCheckUser, resCheckUser) => {
-                    console.log("resCheckUser.rows[0]", resCheckUser.rows[0]);
                     if (errCheckUser) {
                         res.status(500).send("Error 500 at login");
                         console.log(timestamp, "Error 500 at login", errCheckUser);
@@ -64,23 +64,22 @@ const authController = {
                         // resCheckUser[0].user_level != 0 //this will verify 
                         // that role is exist or not
                         ) {
+                            const userLoginAttempt = parseInt(resCheckUser.rows[0].login_attempt);
+                            console.log("userLoginAttempt , login_attempt |", userLoginAttempt, " , ", login_attempt);
                             // cek apakah percobaan login 
                             // lebih dari batas yang ditentukan
                             if (
                             //ini res data dari percobaan login
-                            resCheckUser.rows[0].login_attempt
-                                >=
-                                    //ini jumlah percobaan loginnya
-                                    login_attempt
+                            (userLoginAttempt <= loginAttemptPolicy)
                                 ||
-                                    resCheckUser.rows[0].login_attempt == null) {
+                                    (userLoginAttempt == null)
+                                ||
+                                    (userLoginAttempt == 0)) {
                                 //ini password yang sudah di hash
                                 let waswod = encrypt_1.default.hashPassword(pswd);
                                 //ini untuk param login
                                 let sqlParamLogin = [uname, waswod];
-                                console.log(timestamp, ` sqlParamLogin `, sqlParamLogin);
-                                db_1.dbPgMainQuery.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => {
-                                    console.log("resLogin.rows", resLogin.rows);
+                                db_1.dbPgMain.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => {
                                     if (errLogin) {
                                         res.status(500).send("Error 500 at login");
                                         console.log(timestamp, "Error 500 at login errLogin", errLogin);
@@ -117,10 +116,9 @@ const authController = {
                                 // this case will not allow user that 
                                 // has been reaching login attempt
                                 // ini case percobaan login melampaui yang diizinkan.
-                                let msg = `Too many login attempt!
-                                     Please reset your password using 'forgot password' `;
+                                let msg = `Too many login attempt! Please reset your password! `;
                                 let data = {};
-                                res.status(200).send({ msg, data });
+                                res.status(201).send({ msg, data });
                                 customConsole_1.concol.bright(location, timestamp, msg, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.White);
                             }
                         }

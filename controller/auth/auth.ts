@@ -42,7 +42,9 @@ const authController = {
         let date = new Date();
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id');
 
-        const login_attempt = process.env.SECURITY_TRIAL_LOGIN || 5 // defined agreement of how many attempt
+        const login_attempt: any = process.env.SECURITY_TRIAL_LOGIN || 4 // defined agreement of how many attempt
+        const loginAttemptPolicy = parseInt(login_attempt)
+
         interface RequestBody {
             uname: string; // or any other type
             pswd: string; // or any other type
@@ -61,12 +63,12 @@ const authController = {
                 // cek juga sudah berapa kali dia mencoba untuk login?
                 dbPgMain.query(authSql.checkUser, sqlParamCheckUser,
                     (errCheckUser: Error, resCheckUser: any) => {
-                        console.log("resCheckUser.rows[0]", resCheckUser.rows[0])
 
                         if (errCheckUser) {
                             res.status(500).send("Error 500 at login")
                             console.log(timestamp, "Error 500 at login", errCheckUser)
                         } else {
+
 
                             if (
                                 //user ditemukan  
@@ -75,20 +77,18 @@ const authController = {
                                 // resCheckUser[0].user_level != 0 //this will verify 
                                 // that role is exist or not
                             ) {
-
+                                const userLoginAttempt: number = parseInt(resCheckUser.rows[0].login_attempt)
+                                console.log("userLoginAttempt , login_attempt |", userLoginAttempt, " , ", login_attempt)
                                 // cek apakah percobaan login 
                                 // lebih dari batas yang ditentukan
                                 if (
                                     //ini res data dari percobaan login
-                                    resCheckUser.rows[0].login_attempt
-                                    >=
-                                    //ini jumlah percobaan loginnya
-                                    login_attempt
-
+                                    (userLoginAttempt <= loginAttemptPolicy)
                                     ||
-                                    resCheckUser.rows[0].login_attempt == null
+                                    (userLoginAttempt == null)
+                                    ||
+                                    (userLoginAttempt == 0)
                                 ) {
-
 
                                     //ini password yang sudah di hash
                                     let waswod: string = encrypt.hashPassword(pswd);
@@ -96,14 +96,11 @@ const authController = {
                                     //ini untuk param login
                                     let sqlParamLogin: [string, string] = [uname, waswod];
 
-                                    console.log(timestamp, ` sqlParamLogin `, sqlParamLogin)
-
-                                    dbPgMainQuery.query(
+                                    dbPgMain.query(
                                         authSql.loginQuery,
                                         sqlParamLogin,
                                         (errLogin: Error, resLogin: any) => {
 
-                                            console.log("resLogin.rows", resLogin.rows)
 
                                             if (errLogin) {
 
@@ -168,11 +165,10 @@ const authController = {
                                     // has been reaching login attempt
 
                                     // ini case percobaan login melampaui yang diizinkan.
-                                    let msg: string = `Too many login attempt!
-                                     Please reset your password using 'forgot password' `;
+                                    let msg: string = `Too many login attempt! Please reset your password! `;
                                     let data: any = {};
 
-                                    res.status(200).send({ msg, data });
+                                    res.status(201).send({ msg, data });
                                     concol.bright(
                                         location,
                                         timestamp,
