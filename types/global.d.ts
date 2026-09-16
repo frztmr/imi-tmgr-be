@@ -7,14 +7,18 @@ declare global {
     type Res = Response;
     type Next = NextFunction;
 
+    // type DataToken = {
+    //     user_id: number
+    //     employee_id: number,
+    //     type_id: number,
+    //     uid: string,
+    //     active: number | null,
+    //     status: number | null,
+    //     user_level: number | null,
+    // };
     type DataToken = {
-        user_id: number
-        employee_id: number,
-        type_id: number,
-        uid: string,
-        active: number | null,
-        status: number | null,
-        user_level: number | null,
+        uname: string
+        uID: string, 
     };
     type InventoryData = [{
         matcode: number

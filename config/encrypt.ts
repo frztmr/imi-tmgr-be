@@ -103,9 +103,9 @@ const encrypt = {
                 maxAge: 60 * 60 * 1000,
                 // maxAge: lifeSpan, 
             });
-            concol.plain(queryLocation, timestamp, "cookie generated ", colorTx.White, colorBg.Black)
+            concol.plain(queryLocation, timestamp, "cookie generated and thrown to client", colorTx.White, colorBg.Blue)
         } catch (error) {
-            concol.plain(queryLocation, timestamp, "failed generated cookie ", colorTx.White, colorBg.Red)
+            concol.plain(queryLocation, timestamp, "failed generated cookie " + error, colorTx.White, colorBg.Red)
         }
 
 

@@ -19,7 +19,8 @@ exports.authSql = {
         u.id, 
         u.uname,
         u.login_attempt,
-        u.suspended
+        u.suspended,
+        u.public_share_id
     FROM
     	auth.users u 
     WHERE
@@ -30,7 +31,9 @@ exports.authSql = {
     `,
     loginUpdateAttemptQuery: ` 
     UPDATE auth.users 
-    SET login_attempt = $1
+    SET 
+    login_attempt = $1,
+    last_login_attempt = now()
     WHERE id = $2 ;
     `,
     KeepLoginQuery: ` 

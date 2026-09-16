@@ -66,6 +66,9 @@ const authController = {
                         ) {
                             const userLoginAttempt = parseInt(resCheckUser.rows[0].login_attempt);
                             const isSuspended = resCheckUser.rows[0].suspended;
+                            const lastLoginAttempt = resCheckUser.rows[0].last_login_attempt;
+                            const COOLDOWN_MS = 15 * 1000;
+                            const timeDifference = (Date.now()) - (new Date(lastLoginAttempt).getTime());
                             // cek apakah percobaan login 
                             // lebih dari batas yang ditentukan
                             if (isSuspended) {
@@ -76,79 +79,100 @@ const authController = {
                                 });
                             }
                             else {
-                                if (
-                                //ini res data dari percobaan login
-                                ((userLoginAttempt + 1) <= loginAttemptPolicy)
-                                    ||
-                                        (userLoginAttempt == null)
-                                    ||
-                                        (userLoginAttempt == 0)
-                                    ||
-                                        (!userLoginAttempt)) {
-                                    //ini password yang sudah di hash
-                                    let waswod = encrypt_1.default.hashPassword(pswd);
-                                    //ini untuk param login
-                                    let sqlParamLogin = [uname, waswod];
-                                    db_1.dbPgMain.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => {
-                                        if (errLogin) {
-                                            res.status(500).send("Error 500 at login");
-                                            console.log(timestamp, "Error 500 at login errLogin", errLogin);
-                                        }
-                                        else {
-                                            //cek hasil login apakah username 
-                                            // dan password benar atau tidak
-                                            if (resLogin.rows.length <= 0) {
-                                                // ini case salah password
-                                                res.status(201).send({
-                                                    msg: "wrong password",
-                                                    data: {},
-                                                    ui_configuration: {}
-                                                });
-                                                customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" salah password`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Black);
-                                                const userID = resCheckUser.rows[0].id;
-                                                const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1;
-                                                console.log("updatedAttemptValue", updatedAttemptValue);
-                                                console.log("userLoginAttempt", userLoginAttempt);
-                                                const updateLoginAttemptParam = [(updatedAttemptValue), userID];
-                                                db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
-                                                    if (errUpdateAttept) {
-                                                        customConsole_1.concol.bright("auth", timestamp, `auth error at update login attempt value : ${errUpdateAttept}`, "Red", "Yellow");
-                                                    }
-                                                });
-                                            }
-                                            else {
-                                                // ini case benar
-                                                /* data comment
-                                                data ini akan dilempar ke frontend tanpa enkripsi
-                                                dan akan disimpan di global state redux
-                                                */
-                                                res.status(200).send({
-                                                    msg: `welcome `,
-                                                    data: {},
-                                                    ui_configuration: resLogin.rows[0].ui_configuration
-                                                });
-                                                customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" berhasil`, customConsole_1.colorTx.Green, customConsole_1.colorBg.Black);
-                                                //reset attempt login
-                                                const userID = resCheckUser.rows[0].id;
-                                                const updatedAttemptValue = 0; //ya kan reset 
-                                                const updateLoginAttemptParam = [updatedAttemptValue, userID];
-                                                db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
-                                                    if (errUpdateAttept) {
-                                                        customConsole_1.concol.bright("auth", timestamp, `auth error at reset login attempt value : ${errUpdateAttept}`, "red", "Yellow");
-                                                    }
-                                                });
-                                            }
-                                        }
+                                // bounce click holder
+                                if (timeDifference < COOLDOWN_MS) {
+                                    const remainingSeconds = Math.ceil((COOLDOWN_MS - timeDifference) / 1000);
+                                    res.status(201).send({
+                                        msg: `Whoops! Too fast! please wait ${remainingSeconds} seconds more!`,
+                                        data: {},
+                                        ui_configuration: {}
                                     });
+                                    customConsole_1.concol.plain(location, timestamp, `=> login SPAM_ATTACK by "${uname}" . cooling down for ${remainingSeconds}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Black);
                                 }
                                 else {
-                                    // this case will not allow user that 
-                                    // has been reaching login attempt
-                                    // ini case percobaan login melampaui yang diizinkan.
-                                    let msg = `Too many login attempt! Please reset your password! `;
-                                    let data = {};
-                                    res.status(201).send({ msg, data });
-                                    customConsole_1.concol.bright(location, timestamp, msg, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.White);
+                                    if (
+                                    //ini res data dari percobaan login
+                                    ((userLoginAttempt + 1) <= loginAttemptPolicy)
+                                        ||
+                                            (userLoginAttempt == null)
+                                        ||
+                                            (userLoginAttempt == 0)
+                                        ||
+                                            (!userLoginAttempt)) {
+                                        //ini password yang sudah di hash
+                                        let waswod = encrypt_1.default.hashPassword(pswd);
+                                        //ini untuk param login
+                                        let sqlParamLogin = [uname, waswod];
+                                        db_1.dbPgMain.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => {
+                                            if (errLogin) {
+                                                res.status(500).send("Error 500 at login");
+                                                console.log(timestamp, "Error 500 at login errLogin", errLogin);
+                                            }
+                                            else {
+                                                //cek hasil login apakah username 
+                                                // dan password benar atau tidak
+                                                if (resLogin.rows.length <= 0) {
+                                                    // ini case salah password
+                                                    res.status(201).send({
+                                                        msg: "wrong password",
+                                                        data: {},
+                                                        ui_configuration: {}
+                                                    });
+                                                    customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" salah password`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Black);
+                                                    const userID = resCheckUser.rows[0].id;
+                                                    const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1;
+                                                    const updateLoginAttemptParam = [(updatedAttemptValue), userID];
+                                                    db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
+                                                        if (errUpdateAttept) {
+                                                            customConsole_1.concol.bright("auth", timestamp, `auth error at update login attempt value : ${errUpdateAttept}`, "Red", "Yellow");
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    // ini case benar
+                                                    /* data comment
+                                                    data ini akan dilempar ke frontend tanpa enkripsi
+                                                    dan akan disimpan di global state redux
+                                                    */
+                                                    //set cookie ini, untuk refresh token
+                                                    // ini harus di atas dari res. 
+                                                    // karena tidak bisa kirim res 2x. 
+                                                    // di sini langkah mengirim header, 
+                                                    // lalu next. gitu loh
+                                                    let rawDataToken = {
+                                                        uname: resLogin.rows[0].uname,
+                                                        uID: resLogin.rows[0].public_share_id
+                                                    };
+                                                    encrypt_1.default.setCookie(res, rawDataToken, 0);
+                                                    //tutup comm ke frontend
+                                                    res.status(200).send({
+                                                        msg: `welcome `,
+                                                        data: {},
+                                                        ui_configuration: resLogin.rows[0].ui_configuration
+                                                    });
+                                                    customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" berhasil`, customConsole_1.colorTx.Green, customConsole_1.colorBg.Black);
+                                                    //reset attempt login
+                                                    const userID = resCheckUser.rows[0].id;
+                                                    const updatedAttemptValue = 0; //ya kan reset 
+                                                    const updateLoginAttemptParam = [updatedAttemptValue, userID];
+                                                    db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
+                                                        if (errUpdateAttept) {
+                                                            customConsole_1.concol.bright("auth", timestamp, `auth error at reset login attempt value : ${errUpdateAttept}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Yellow);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        // this case will NOT allow user that 
+                                        // has been reaching login attempt
+                                        // ini case percobaan login melampaui yang diizinkan.
+                                        let msg = `Too many login attempt! Please reset your password! `;
+                                        let data = {};
+                                        res.status(201).send({ msg, data });
+                                        customConsole_1.concol.bright(location, timestamp, msg, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.White);
+                                    }
                                 }
                             }
                         }
@@ -225,7 +249,7 @@ const authController = {
                                         user_level: rawData.user_level,
                                     };
                                     // let tokek = encrypt.generateToken(rawDataToken);
-                                    encrypt_1.default.setCookie(res, rawDataToken, 0);
+                                    // encrypt.setCookie(res, rawDataToken, 0);
                                     let success = data.active == 1 ? true : false;
                                     res.status(200).send({ msg, data, success });
                                     customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uid}" berhasil`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);

@@ -74,10 +74,10 @@ const encrypt = {
                 maxAge: 60 * 60 * 1000,
                 // maxAge: lifeSpan, 
             });
-            customConsole_1.concol.plain(queryLocation, timestamp, "cookie generated ", customConsole_1.colorTx.White, customConsole_1.colorBg.Black);
+            customConsole_1.concol.plain(queryLocation, timestamp, "cookie generated and thrown to client", customConsole_1.colorTx.White, customConsole_1.colorBg.Blue);
         }
         catch (error) {
-            customConsole_1.concol.plain(queryLocation, timestamp, "failed generated cookie ", customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
+            customConsole_1.concol.plain(queryLocation, timestamp, "failed generated cookie " + error, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
         }
     },
     decodeCookies: (req, res, next) => {

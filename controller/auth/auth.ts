@@ -80,6 +80,9 @@ const authController = {
                             ) {
                                 const userLoginAttempt: number = parseInt(resCheckUser.rows[0].login_attempt)
                                 const isSuspended: Boolean = resCheckUser.rows[0].suspended
+                                const lastLoginAttempt: Date = resCheckUser.rows[0].last_login_attempt
+                                const COOLDOWN_MS = 15 * 1000;
+                                const timeDifference = (Date.now()) - (new Date(lastLoginAttempt).getTime());
 
                                 // cek apakah percobaan login 
                                 // lebih dari batas yang ditentukan
@@ -90,150 +93,186 @@ const authController = {
                                         ui_configuration: {}
                                     });
                                 } else {
-                                    if (
-                                        //ini res data dari percobaan login
-                                        ((userLoginAttempt + 1) <= loginAttemptPolicy)
-                                        ||
-                                        (userLoginAttempt == null)
-                                        ||
-                                        (userLoginAttempt == 0)
-                                        ||
-                                        (!userLoginAttempt)
-                                    ) {
 
-                                        //ini password yang sudah di hash
-                                        let waswod: string = encrypt.hashPassword(pswd);
+                                    // bounce click holder
 
-                                        //ini untuk param login
-                                        let sqlParamLogin: [string, string] = [uname, waswod];
+                                    if (timeDifference < COOLDOWN_MS) {
+                                        const remainingSeconds = Math.ceil((COOLDOWN_MS - timeDifference) / 1000);
 
-                                        dbPgMain.query(
-                                            authSql.loginQuery,
-                                            sqlParamLogin,
-                                            (errLogin: Error, resLogin: any) => {
+                                        res.status(201).send({
+                                            msg: `Whoops! Too fast! please wait ${remainingSeconds} seconds more!`,
+                                            data: {},
+                                            ui_configuration: {}
+                                        });
+                                        concol.plain(
+                                            location,
+                                            timestamp,
+                                            `=> login SPAM_ATTACK by "${uname}" . cooling down for ${remainingSeconds}`,
+                                            colorTx.Red,
+                                            colorBg.Black
+                                        );
+                                    } else {
+
+                                        if (
+                                            //ini res data dari percobaan login
+                                            ((userLoginAttempt + 1) <= loginAttemptPolicy)
+                                            ||
+                                            (userLoginAttempt == null)
+                                            ||
+                                            (userLoginAttempt == 0)
+                                            ||
+                                            (!userLoginAttempt)
+                                        ) {
 
 
-                                                if (errLogin) {
+                                            //ini password yang sudah di hash
+                                            let waswod: string = encrypt.hashPassword(pswd);
 
-                                                    res.status(500).send("Error 500 at login");
-                                                    console.log(
-                                                        timestamp,
-                                                        "Error 500 at login errLogin",
-                                                        errLogin
-                                                    );
+                                            //ini untuk param login
+                                            let sqlParamLogin: [string, string] = [uname, waswod];
 
-                                                } else {
+                                            dbPgMain.query(
+                                                authSql.loginQuery,
+                                                sqlParamLogin,
+                                                (errLogin: Error, resLogin: any) => {
 
-                                                    //cek hasil login apakah username 
-                                                    // dan password benar atau tidak
 
-                                                    if (resLogin.rows.length <= 0) {
+                                                    if (errLogin) {
 
-                                                        // ini case salah password
-
-                                                        res.status(201).send({
-                                                            msg: "wrong password",
-                                                            data: {},
-                                                            ui_configuration: {}
-                                                        });
-
-                                                        concol.plain(
-                                                            location,
+                                                        res.status(500).send("Error 500 at login");
+                                                        console.log(
                                                             timestamp,
-                                                            `=> login "${uname}" salah password`,
-                                                            colorTx.Red,
-                                                            colorBg.Black
+                                                            "Error 500 at login errLogin",
+                                                            errLogin
                                                         );
-
-                                                        const userID = resCheckUser.rows[0].id
-                                                        const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1
-                                                        console.log("updatedAttemptValue", updatedAttemptValue)
-                                                        console.log("userLoginAttempt", userLoginAttempt)
-
-                                                        const updateLoginAttemptParam: [Number, String] = [(updatedAttemptValue), userID]
-
-                                                        dbPgMain.query(
-                                                            authSql.loginUpdateAttemptQuery,
-                                                            updateLoginAttemptParam,
-                                                            (errUpdateAttept: Error) => {
-
-                                                                if (errUpdateAttept) {
-                                                                    concol.bright(
-                                                                        "auth",
-                                                                        timestamp,
-                                                                        `auth error at update login attempt value : ${errUpdateAttept}`,
-                                                                        "Red", "Yellow")
-                                                                }
-                                                            }
-                                                        )
-
 
                                                     } else {
 
-                                                        // ini case benar
-                                                        /* data comment
-                                                        data ini akan dilempar ke frontend tanpa enkripsi 
-                                                        dan akan disimpan di global state redux
-                                                        */
+                                                        //cek hasil login apakah username 
+                                                        // dan password benar atau tidak
 
-                                                        res.status(200).send({
-                                                            msg: `welcome `,
-                                                            data: {},
-                                                            ui_configuration: resLogin.rows[0].ui_configuration
-                                                        });
+                                                        if (resLogin.rows.length <= 0) {
 
-                                                        concol.plain(
-                                                            location,
-                                                            timestamp,
-                                                            `=> login "${uname}" berhasil`,
-                                                            colorTx.Green,
-                                                            colorBg.Black
-                                                        );
+                                                            // ini case salah password
 
-                                                        //reset attempt login
-                                                        const userID = resCheckUser.rows[0].id
-                                                        const updatedAttemptValue = 0 //ya kan reset 
+                                                            res.status(201).send({
+                                                                msg: "wrong password",
+                                                                data: {},
+                                                                ui_configuration: {}
+                                                            });
 
-                                                        const updateLoginAttemptParam: [Number, String] = [updatedAttemptValue, userID]
+                                                            concol.plain(
+                                                                location,
+                                                                timestamp,
+                                                                `=> login "${uname}" salah password`,
+                                                                colorTx.Red,
+                                                                colorBg.Black
+                                                            );
 
-                                                        dbPgMain.query(
-                                                            authSql.loginUpdateAttemptQuery,
-                                                            updateLoginAttemptParam,
-                                                            (errUpdateAttept: Error) => {
+                                                            const userID = resCheckUser.rows[0].id
+                                                            const updatedAttemptValue = (userLoginAttempt ? userLoginAttempt : 0) + 1
 
-                                                                if (errUpdateAttept) {
-                                                                    concol.bright(
-                                                                        "auth",
-                                                                        timestamp,
-                                                                        `auth error at reset login attempt value : ${errUpdateAttept}`,
-                                                                        "red", "Yellow"
-                                                                    )
+                                                            const updateLoginAttemptParam: [Number, String] = [(updatedAttemptValue), userID]
+
+                                                            dbPgMain.query(
+                                                                authSql.loginUpdateAttemptQuery,
+                                                                updateLoginAttemptParam,
+                                                                (errUpdateAttept: Error) => {
+
+                                                                    if (errUpdateAttept) {
+                                                                        concol.bright(
+                                                                            "auth",
+                                                                            timestamp,
+                                                                            `auth error at update login attempt value : ${errUpdateAttept}`,
+                                                                            "Red", "Yellow")
+                                                                    }
                                                                 }
+                                                            )
 
+
+                                                        } else {
+
+                                                            // ini case benar
+                                                            /* data comment
+                                                            data ini akan dilempar ke frontend tanpa enkripsi 
+                                                            dan akan disimpan di global state redux
+                                                            */
+
+                                                            //set cookie ini, untuk refresh token
+                                                            // ini harus di atas dari res. 
+                                                            // karena tidak bisa kirim res 2x. 
+                                                            // di sini langkah mengirim header, 
+                                                            // lalu next. gitu loh
+                                                            let rawDataToken: any = {
+                                                                uname: resLogin.rows[0].uname,
+                                                                uID: resLogin.rows[0].public_share_id
                                                             }
-                                                        )
+                                                            encrypt.setCookie(res, rawDataToken, 0);
+
+                                                            //tutup comm ke frontend
+                                                            res.status(200).send({
+                                                                msg: `welcome `,
+                                                                data: {},
+                                                                ui_configuration: resLogin.rows[0].ui_configuration
+                                                            });
+
+                                                            concol.plain(
+                                                                location,
+                                                                timestamp,
+                                                                `=> login "${uname}" berhasil`,
+                                                                colorTx.Green,
+                                                                colorBg.Black
+                                                            );
+
+
+
+
+                                                            //reset attempt login
+                                                            const userID = resCheckUser.rows[0].id
+                                                            const updatedAttemptValue = 0 //ya kan reset 
+
+                                                            const updateLoginAttemptParam: [Number, String] = [updatedAttemptValue, userID]
+
+                                                            dbPgMain.query(
+                                                                authSql.loginUpdateAttemptQuery,
+                                                                updateLoginAttemptParam,
+                                                                (errUpdateAttept: Error) => {
+
+                                                                    if (errUpdateAttept) {
+                                                                        concol.bright(
+                                                                            "auth",
+                                                                            timestamp,
+                                                                            `auth error at reset login attempt value : ${errUpdateAttept}`,
+                                                                            colorTx.Red, colorBg.Yellow
+                                                                        )
+                                                                    }
+
+                                                                }
+                                                            )
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
 
-                                    } else {
+                                        } else {
 
-                                        // this case will not allow user that 
-                                        // has been reaching login attempt
+                                            // this case will NOT allow user that 
+                                            // has been reaching login attempt
 
-                                        // ini case percobaan login melampaui yang diizinkan.
-                                        let msg: string = `Too many login attempt! Please reset your password! `;
-                                        let data: any = {};
+                                            // ini case percobaan login melampaui yang diizinkan.
+                                            let msg: string = `Too many login attempt! Please reset your password! `;
+                                            let data: any = {};
 
-                                        res.status(201).send({ msg, data });
-                                        concol.bright(
-                                            location,
-                                            timestamp,
-                                            msg,
-                                            colorTx.Yellow,
-                                            colorBg.White
-                                        );
+                                            res.status(201).send({ msg, data });
+                                            concol.bright(
+                                                location,
+                                                timestamp,
+                                                msg,
+                                                colorTx.Yellow,
+                                                colorBg.White
+                                            );
+                                        }
                                     }
+
                                 }
 
                             } else {
@@ -341,7 +380,7 @@ const authController = {
                                     }
 
                                     // let tokek = encrypt.generateToken(rawDataToken);
-                                    encrypt.setCookie(res, rawDataToken, 0);
+                                    // encrypt.setCookie(res, rawDataToken, 0);
 
                                     let success = data.active == 1 ? true : false
 
