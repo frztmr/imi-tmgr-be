@@ -20,9 +20,12 @@ exports.authSql = {
         u.uname,
         u.login_attempt,
         u.suspended,
-        u.public_share_id
+        u.public_share_id,
+        r.codes role_code,
+        r.names role_name 
     FROM
-    	auth.users u 
+        auth.users u
+    LEFT JOIN auth.roles r ON u.user_role = r.codes 
     WHERE
         u.uname = $1
         AND u.pswd = $2

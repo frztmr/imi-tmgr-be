@@ -157,7 +157,13 @@ const authController = {
 
                                                             res.status(201).send({
                                                                 msg: "wrong password",
-                                                                data: {},
+                                                                data: {
+                                                                    uname: resLogin.rows[0].uname,
+                                                                    public_share_id: resLogin.rows[0].public_share_id,
+                                                                    role_code: resLogin.rows[0].role_code,
+                                                                    role_name: resLogin.rows[0].role_name,
+
+                                                                },
                                                                 ui_configuration: {}
                                                             });
 
@@ -212,7 +218,13 @@ const authController = {
                                                             //tutup comm ke frontend
                                                             res.status(200).send({
                                                                 msg: `welcome `,
-                                                                data: {},
+                                                                data: {
+                                                                    uname: resLogin.rows[0].uname,
+                                                                    pid: resLogin.rows[0].public_share_id,
+                                                                    role_code: resLogin.rows[0].role_code,
+                                                                    role_name: resLogin.rows[0].role_name
+
+                                                                },
                                                                 ui_configuration: resLogin.rows[0].ui_configuration
                                                             });
 

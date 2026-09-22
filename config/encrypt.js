@@ -70,7 +70,7 @@ const encrypt = {
                 httpOnly: true,
                 // secure: cookieSecureParameter, // use true in production with HTTPS  
                 secure: false, // use true in production with HTTPS  
-                sameSite: 'lax', // local
+                sameSite: 'lax', // local. Secure -> production
                 maxAge: 60 * 60 * 1000,
                 // maxAge: lifeSpan, 
             });

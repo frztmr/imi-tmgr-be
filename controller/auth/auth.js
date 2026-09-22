@@ -115,7 +115,12 @@ const authController = {
                                                     // ini case salah password
                                                     res.status(201).send({
                                                         msg: "wrong password",
-                                                        data: {},
+                                                        data: {
+                                                            uname: resLogin.rows[0].uname,
+                                                            public_share_id: resLogin.rows[0].public_share_id,
+                                                            role_code: resLogin.rows[0].role_code,
+                                                            role_name: resLogin.rows[0].role_name,
+                                                        },
                                                         ui_configuration: {}
                                                     });
                                                     customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" salah password`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Black);
@@ -147,7 +152,12 @@ const authController = {
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
                                                         msg: `welcome `,
-                                                        data: {},
+                                                        data: {
+                                                            uname: resLogin.rows[0].uname,
+                                                            pid: resLogin.rows[0].public_share_id,
+                                                            role_code: resLogin.rows[0].role_code,
+                                                            role_name: resLogin.rows[0].role_name
+                                                        },
                                                         ui_configuration: resLogin.rows[0].ui_configuration
                                                     });
                                                     customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" berhasil`, customConsole_1.colorTx.Green, customConsole_1.colorBg.Black);
