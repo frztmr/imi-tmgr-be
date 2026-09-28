@@ -338,8 +338,7 @@ const authController = {
                     let sqlParam: [String] = [userData.uname];
 
                     console.log("ID + ",
-                        sealStampGenerator(userData, "A_KL"),
-                        sqlParam
+                        sealStampGenerator(userData, "A_KL"), 
                     )
 
                     dbPgMain.query(
@@ -362,8 +361,7 @@ const authController = {
                             } else {
 
                                 //user ditemukan. pasword benar, berhasil login 
-                                if (results.rows.length > 0) {
-                                    console.log('results.rows', results.rows)
+                                if (results.rows.length > 0) { 
 
                                     let rawData = results.rows[0];
 
@@ -386,7 +384,12 @@ const authController = {
 
                                     } else {
                                         // let tokek = encrypt.generateToken(rawDataToken);
-                                        // encrypt.setCookie(res, rawDataToken, 0);
+
+                                        let rawDataToken: any = {
+                                            uname: results.rows[0].uname,
+                                            uID: results.rows[0].public_share_id
+                                        }
+                                        encrypt.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
 
 
                                         // res.status(200).send({ msg, data, success })
@@ -423,7 +426,7 @@ const authController = {
 
                             }
 
-                        }) 
+                        })
                 } else {
                     //token or userdata is not provided properly
                     res.status(401).send(

@@ -222,7 +222,7 @@ const authController = {
                 // console.log("yes, ada cookie isinya ", userData);
                 if (userData) {
                     let sqlParam = [userData.uname];
-                    console.log("ID + ", (0, IDGenerator_1.sealStampGenerator)(userData, "A_KL"), sqlParam);
+                    console.log("ID + ", (0, IDGenerator_1.sealStampGenerator)(userData, "A_KL"));
                     db_1.dbPgMain.query(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => {
                         /*
                          authSql.KeepLoginQuery,
@@ -236,7 +236,6 @@ const authController = {
                         else {
                             //user ditemukan. pasword benar, berhasil login 
                             if (results.rows.length > 0) {
-                                console.log('results.rows', results.rows);
                                 let rawData = results.rows[0];
                                 if (results.rows[0].suspended) {
                                     customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${userData.uid}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
@@ -249,7 +248,11 @@ const authController = {
                                 }
                                 else {
                                     // let tokek = encrypt.generateToken(rawDataToken);
-                                    // encrypt.setCookie(res, rawDataToken, 0);
+                                    let rawDataToken = {
+                                        uname: results.rows[0].uname,
+                                        uID: results.rows[0].public_share_id
+                                    };
+                                    encrypt_1.default.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
                                     // res.status(200).send({ msg, data, success })
                                     res.status(200).send({
                                         msg: `Hello :) `,
