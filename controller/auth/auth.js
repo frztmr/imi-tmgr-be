@@ -16,6 +16,7 @@ const db_1 = require("../../config/db");
 const encrypt_1 = __importDefault(require("../../config/encrypt"));
 const customConsole_1 = require("../../config/customConsole");
 const authSqlQuery_1 = require("./authSqlQuery");
+const IDGenerator_1 = require("../../config/IDGenerator");
 /*
 auth diantaranya:
 - login,
@@ -115,11 +116,11 @@ const authController = {
                                                     // ini case salah password
                                                     res.status(201).send({
                                                         msg: "wrong password",
-                                                        data: {
-                                                            uname: resLogin.rows[0].uname,
-                                                            public_share_id: resLogin.rows[0].public_share_id,
-                                                            role_code: resLogin.rows[0].role_code,
-                                                            role_name: resLogin.rows[0].role_name,
+                                                        personal: {
+                                                            uname: '',
+                                                            pid: '',
+                                                            role_code: '',
+                                                            role_name: ''
                                                         },
                                                         ui_configuration: {}
                                                     });
@@ -134,7 +135,7 @@ const authController = {
                                                     });
                                                 }
                                                 else {
-                                                    // ini case benar
+                                                    // INI CASE JIKA PASSWORD BENAR
                                                     /* data comment
                                                     data ini akan dilempar ke frontend tanpa enkripsi
                                                     dan akan disimpan di global state redux
@@ -148,11 +149,11 @@ const authController = {
                                                         uname: resLogin.rows[0].uname,
                                                         uID: resLogin.rows[0].public_share_id
                                                     };
-                                                    encrypt_1.default.setCookie(res, rawDataToken, 0);
+                                                    encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
                                                         msg: `welcome `,
-                                                        data: {
+                                                        personal: {
                                                             uname: resLogin.rows[0].uname,
                                                             pid: resLogin.rows[0].public_share_id,
                                                             role_code: resLogin.rows[0].role_code,
@@ -165,6 +166,7 @@ const authController = {
                                                     const userID = resCheckUser.rows[0].id;
                                                     const updatedAttemptValue = 0; //ya kan reset 
                                                     const updateLoginAttemptParam = [updatedAttemptValue, userID];
+                                                    // INI UNTUK MERESET LOGIN ATTEMPT JIKA ADA
                                                     db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
                                                         if (errUpdateAttept) {
                                                             customConsole_1.concol.bright("auth", timestamp, `auth error at reset login attempt value : ${errUpdateAttept}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Yellow);
@@ -217,67 +219,55 @@ const authController = {
         try {
             if (req.cookies) {
                 const userData = req.dataToken;
+                // console.log("yes, ada cookie isinya ", userData);
                 if (userData) {
-                    let sqlParam = [userData.uid];
-                    db_1.dbHots.execute(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => {
+                    let sqlParam = [userData.uname];
+                    console.log("ID + ", (0, IDGenerator_1.sealStampGenerator)(userData, "A_KL"), sqlParam);
+                    db_1.dbPgMain.query(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => {
+                        /*
+                         authSql.KeepLoginQuery,
+                         sqlParam, (err: Error, results: RowDataPacket[]) => {
+                        
+                        */
                         if (err) {
                             res.status(500).send("Error 500 at keepLogin");
                             customConsole_1.concol.reverse(location, timestamp, `Error 500 at login ${err}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.White);
                         }
                         else {
                             //user ditemukan. pasword benar, berhasil login 
-                            if (results.length > 0) {
-                                let rawData = results[0];
-                                let finished_date = rawData.finished_date;
-                                if (!finished_date) {
-                                    let msg = "berhasil";
-                                    /*
-                                    data ini akan dilempar ke frontend tanpa enkripsi
-                                    dan akan disimpan di global state redux
-                                    */
-                                    let data = {
-                                        firstname: rawData.firstname,
-                                        lastname: rawData.lastname,
-                                        type_id: rawData.type_id,
-                                        uid: rawData.uid,
-                                        active: rawData.active,
-                                        status: rawData.status,
-                                        user_level: rawData.user_level,
-                                    };
-                                    /*
-                                    data ini akan dilempar ke frontend dengan enkripsi
-                                    dan data ini akan disimpan di cookies
-                                    dan dikirim ke backend jika diperlukan
-                                    */
-                                    let rawDataToken = {
-                                        user_id: rawData.user_id,
-                                        employee_id: rawData.employee_id,
-                                        type_id: rawData.type_id,
-                                        uid: rawData.uid,
-                                        active: rawData.active,
-                                        status: rawData.status,
-                                        user_level: rawData.user_level,
-                                    };
-                                    // let tokek = encrypt.generateToken(rawDataToken);
-                                    // encrypt.setCookie(res, rawDataToken, 0);
-                                    let success = data.active == 1 ? true : false;
-                                    res.status(200).send({ msg, data, success });
-                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uid}" berhasil`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
-                                }
-                                else {
+                            if (results.rows.length > 0) {
+                                console.log('results.rows', results.rows);
+                                let rawData = results.rows[0];
+                                if (results.rows[0].suspended) {
                                     customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${userData.uid}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
-                                    res.status(401).send({
-                                        msg: "you are no longer authorized to login. your accound are suspended",
+                                    res.status(201).send({
+                                        msg: "Whoops! Please try to login!",
                                         data: {},
                                         success: false,
                                         tokek: ''
                                     });
                                 }
+                                else {
+                                    // let tokek = encrypt.generateToken(rawDataToken);
+                                    // encrypt.setCookie(res, rawDataToken, 0);
+                                    // res.status(200).send({ msg, data, success })
+                                    res.status(200).send({
+                                        msg: `Hello :) `,
+                                        personal: {
+                                            uname: rawData.uname,
+                                            pid: rawData.public_share_id,
+                                            role_code: rawData.role_code,
+                                            role_name: rawData.role_name
+                                        },
+                                        // ui_configuration: resLogin.rows[0].ui_configuration
+                                    });
+                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uid}" berhasil`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
+                                }
                             }
                             else {
                                 //salah password, tidak ada data ditemukan 
-                                res.status(401).send({
-                                    msg: "",
+                                res.status(201).send({
+                                    msg: "Whoops, something went wrong",
                                     data: {},
                                     success: false,
                                     tokek: ''

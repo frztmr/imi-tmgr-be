@@ -73,19 +73,25 @@ const encrypt = {
         }
 
     },
-    setCookie: (res: Response, dataToken: DataToken, expiresIn: number): any => {
+    setCookie: async (res: Response, dataToken: DataToken, expiresInSeconds?: number) => {
 
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
 
+        // 1. Tentukan fallback default (misal 1 jam / 3600 detik) jika tidak diisi atau 0
+        const DEFAULT_EXPIRE_SECONDS = 60 * 60; // 1 jam dalam detik -> INI DEGAULT VALUE
+        const durationInSeconds = (expiresInSeconds && expiresInSeconds > 0)
+            ? expiresInSeconds
+            : DEFAULT_EXPIRE_SECONDS;
+
+        const durationInMs = durationInSeconds * 1000; // DIKALI SERIBU
 
         let tokek: string = jwt.sign(
             dataToken,
             process.env.SECURITY_TOKEN_KEY || 'kepo_lu_anjir',
-            { expiresIn: '1h' }
+            { expiresIn: durationInMs }
         )
 
-        let lifeSpan: number = expiresIn = 0 ? 60 * 60 * 1000 : expiresIn // 1 hour
         /*
          MAX AGE: 
          60 seconds ×  
@@ -95,12 +101,13 @@ const encrypt = {
          */
 
         try {
-            res.cookie("tokek", tokek, {
+             res.cookie("tokek", tokek, {
                 httpOnly: true,
                 // secure: cookieSecureParameter, // use true in production with HTTPS  
                 secure: false, // use true in production with HTTPS  
                 sameSite: 'lax', // local. Secure -> production
-                maxAge: 60 * 60 * 1000,
+                maxAge: durationInMs
+                // maxAge: 60 * 60 * 1000, // 60 menit * 60 detik * 1000 milidetik
                 // maxAge: lifeSpan, 
             });
             concol.plain(queryLocation, timestamp, "cookie generated and thrown to client", colorTx.White, colorBg.Blue)
@@ -110,7 +117,7 @@ const encrypt = {
 
 
     },
-    decodeCookies: (req: any, res: any, next: Next) => {
+    decodeCookies: async (req: any, res: any, next: Next) => {
 
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
@@ -118,31 +125,30 @@ const encrypt = {
 
         if (req.cookies) {
             // concol.bright(queryLocation,timestamp,`isi cookies ${req.cookies} `, colorTx.Green, colorBg.Red)
+            console.log("req.cookies?.['tokek']", req.cookies?.['tokek'])
 
+            if (!(req.cookies?.['tokek'])) { //case ini jika gak ada token
 
-            if (!(req.cookies?.['tokek'])) {
-
-                // return res.status(401).send("INVALID TOKEN");
-                // res.status(200).send();
                 concol.plain(queryLocation, timestamp, " gak ada cookie", colorTx.Yellow, colorBg.Black);
                 let msg: string = "there is no cookie to decode "
                 let success: boolean = false
-                res.status(204).send({ msg, success });
+                // res.status(204).send({ msg, success }); //tpken gak ada atau gak valid
 
-            } else {
+            } else { // case ini jika ada token. 
 
                 try {
                     let cookies: string = req.cookies['tokek'];
 
                     const decoded = jwt.verify(cookies, process.env.SECURITY_TOKEN_KEY || "fedsvaihnu");
-                    (req as any).dataToken = decoded;
+                    (req as any).dataToken = decoded; // decoding token
+                    console.log("decoded", decoded)
                     next();
                     concol.plain(queryLocation, timestamp, "eating (decoding) cookie ", colorTx.White, colorBg.Black)
 
                 } catch (err) {
                     let msg: string = "failed to decode cookie "
                     let success: boolean = false
-                    res.status(204).send({ msg, success });
+                    // res.status(204).send({ msg, success });
 
                 }
 

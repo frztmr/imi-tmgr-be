@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -53,11 +62,16 @@ const encrypt = {
             customConsole_1.concol.plain(queryLocation, timestamp, `ERRORR while clear cookie : ${error}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Black);
         }
     },
-    setCookie: (res, dataToken, expiresIn) => {
+    setCookie: (res, dataToken, expiresInSeconds) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
-        let tokek = jsonwebtoken_1.default.sign(dataToken, process.env.SECURITY_TOKEN_KEY || 'kepo_lu_anjir', { expiresIn: '1h' });
-        let lifeSpan = expiresIn = 0 ? 60 * 60 * 1000 : expiresIn; // 1 hour
+        // 1. Tentukan fallback default (misal 1 jam / 3600 detik) jika tidak diisi atau 0
+        const DEFAULT_EXPIRE_SECONDS = 60 * 60; // 1 jam dalam detik -> INI DEGAULT VALUE
+        const durationInSeconds = (expiresInSeconds && expiresInSeconds > 0)
+            ? expiresInSeconds
+            : DEFAULT_EXPIRE_SECONDS;
+        const durationInMs = durationInSeconds * 1000; // DIKALI SERIBU
+        let tokek = jsonwebtoken_1.default.sign(dataToken, process.env.SECURITY_TOKEN_KEY || 'kepo_lu_anjir', { expiresIn: durationInMs });
         /*
          MAX AGE:
          60 seconds ×
@@ -71,7 +85,8 @@ const encrypt = {
                 // secure: cookieSecureParameter, // use true in production with HTTPS  
                 secure: false, // use true in production with HTTPS  
                 sameSite: 'lax', // local. Secure -> production
-                maxAge: 60 * 60 * 1000,
+                maxAge: durationInMs
+                // maxAge: 60 * 60 * 1000, // 60 menit * 60 detik * 1000 milidetik
                 // maxAge: lifeSpan, 
             });
             customConsole_1.concol.plain(queryLocation, timestamp, "cookie generated and thrown to client", customConsole_1.colorTx.White, customConsole_1.colorBg.Blue);
@@ -79,39 +94,39 @@ const encrypt = {
         catch (error) {
             customConsole_1.concol.plain(queryLocation, timestamp, "failed generated cookie " + error, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
         }
-    },
-    decodeCookies: (req, res, next) => {
-        var _a;
+    }),
+    decodeCookies: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a, _b;
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
         if (req.cookies) {
             // concol.bright(queryLocation,timestamp,`isi cookies ${req.cookies} `, colorTx.Green, colorBg.Red)
-            if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a['tokek'])) {
-                // return res.status(401).send("INVALID TOKEN");
-                // res.status(200).send();
+            console.log("req.cookies?.['tokek']", (_a = req.cookies) === null || _a === void 0 ? void 0 : _a['tokek']);
+            if (!((_b = req.cookies) === null || _b === void 0 ? void 0 : _b['tokek'])) { //case ini jika gak ada token
                 customConsole_1.concol.plain(queryLocation, timestamp, " gak ada cookie", customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                 let msg = "there is no cookie to decode ";
                 let success = false;
-                res.status(204).send({ msg, success });
+                // res.status(204).send({ msg, success }); //tpken gak ada atau gak valid
             }
-            else {
+            else { // case ini jika ada token. 
                 try {
                     let cookies = req.cookies['tokek'];
                     const decoded = jsonwebtoken_1.default.verify(cookies, process.env.SECURITY_TOKEN_KEY || "fedsvaihnu");
-                    req.dataToken = decoded;
+                    req.dataToken = decoded; // decoding token
+                    console.log("decoded", decoded);
                     next();
                     customConsole_1.concol.plain(queryLocation, timestamp, "eating (decoding) cookie ", customConsole_1.colorTx.White, customConsole_1.colorBg.Black);
                 }
                 catch (err) {
                     let msg = "failed to decode cookie ";
                     let success = false;
-                    res.status(204).send({ msg, success });
+                    // res.status(204).send({ msg, success });
                 }
             }
         }
         else {
             res.status(500).send({ error: "there is no cookies " });
         }
-    },
+    }),
 };
 exports.default = encrypt;
