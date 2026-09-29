@@ -95,7 +95,7 @@ const encrypt = {
             customConsole_1.concol.plain(queryLocation, timestamp, "failed generated cookie " + error, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
         }
         finally {
-            return { tokek };
+            return tokek;
         }
     }),
     decodeCookies: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

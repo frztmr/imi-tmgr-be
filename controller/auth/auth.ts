@@ -137,7 +137,7 @@ const authController = {
                                             dbPgMain.query(
                                                 authSql.loginQuery,
                                                 sqlParamLogin,
-                                                (errLogin: Error, resLogin: any) => {
+                                                async (errLogin: Error, resLogin: any) => {
 
 
                                                     if (errLogin) {
@@ -218,9 +218,8 @@ const authController = {
                                                                 uID: resLogin.rows[0].public_share_id
                                                             }
 
-                                                            const tokek = encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
-                                                            console.log("isi tokek: ", tokek)
-                                                            updateSesion(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for)
+                                                            const tokek = await encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                            await updateSesion(resLogin.rows[0].id, JSON.stringify(tokek), resLogin.rows[0].stay_log_for);
 
 
                                                             //tutup comm ke frontend
@@ -369,7 +368,7 @@ const authController = {
 
                     dbPgMain.query(
                         authSql.KeepLoginQuery, sqlParam,
-                        (err: Error, results: QueryResult<any>) => {
+                        async (err: Error, results: QueryResult<any>) => {
                             /*
                              authSql.KeepLoginQuery,
                              sqlParam, (err: Error, results: RowDataPacket[]) => {
@@ -391,10 +390,10 @@ const authController = {
 
                                     let rawData = results.rows[0];
 
-                                    console.log("rawData.id + ",
-                                        sealStampGenerator(rawData.id, "A_KL"),
-                                        //A: auth, KL, KeepLogin
-                                    );
+
+                                    // // spare ini untuk event logger
+                                    // sealStampGenerator(rawData.id, "A_KL")
+ 
 
                                     if (results.rows[0].suspended) {
 
@@ -420,8 +419,9 @@ const authController = {
                                             uname: results.rows[0].uname,
                                             uID: results.rows[0].public_share_id
                                         }
-                                        encrypt.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
 
+                                        const tokek = await encrypt.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
+                                        await updateSesion(results.rows[0].id, JSON.stringify(tokek), results.rows[0].stay_log_for);
 
                                         // res.status(200).send({ msg, data, success })
                                         res.status(200).send({

@@ -42,11 +42,10 @@ export const authSql = {
     UPDATE auth.sesi 
     SET  
        invalidate = false
-    WHERE id = $1 
-    ); ;
+    WHERE user_id = $1;
     `,
     KeepLoginQuery: ` 
-    SELECT
+        SELECT
         u.id, 
         u.uname,
         u.login_attempt,
@@ -54,13 +53,17 @@ export const authSql = {
         u.public_share_id,
         u.stay_log_for,
         r.codes role_code,
-        r.names role_name 
+        r.names role_name,
+        s.refresh_token,
+        s.invalidate 
     FROM
         auth.users u
-    LEFT JOIN auth.roles r ON u.user_role = r.codes 
+    LEFT JOIN auth.roles r ON u.user_role = r.codes
+    LEFT JOIN auth.sesi s ON u.id = s.user_id 
     WHERE
-        u.uname = $1 
+        u.uname = $1
     AND u.suspended IS NOT TRUE
+    AND s.invalidate IS NOT TRUE 
     LIMIT 1;
     `,
     checkSesion: `

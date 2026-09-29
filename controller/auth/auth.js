@@ -105,7 +105,7 @@ const authController = {
                                         let waswod = encrypt_1.default.hashPassword(pswd);
                                         //ini untuk param login
                                         let sqlParamLogin = [uname, waswod];
-                                        db_1.dbPgMain.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => {
+                                        db_1.dbPgMain.query(authSqlQuery_1.authSql.loginQuery, sqlParamLogin, (errLogin, resLogin) => __awaiter(void 0, void 0, void 0, function* () {
                                             if (errLogin) {
                                                 res.status(500).send("Error 500 at login");
                                                 console.log(timestamp, "Error 500 at login errLogin", errLogin);
@@ -151,9 +151,8 @@ const authController = {
                                                         uname: resLogin.rows[0].uname,
                                                         uID: resLogin.rows[0].public_share_id
                                                     };
-                                                    const tokek = encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
-                                                    console.log("isi tokek: ", tokek);
-                                                    (0, updateSesion_1.default)(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for);
+                                                    const tokek = yield encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                    yield (0, updateSesion_1.default)(resLogin.rows[0].id, JSON.stringify(tokek), resLogin.rows[0].stay_log_for);
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
                                                         msg: `welcome `,
@@ -185,7 +184,7 @@ const authController = {
                                                     });
                                                 }
                                             }
-                                        });
+                                        }));
                                     }
                                     else {
                                         // this case will NOT allow user that 
@@ -233,7 +232,7 @@ const authController = {
                 // console.log("yes, ada cookie isinya ", userData);
                 if (userData) {
                     let sqlParam = [userData.uname];
-                    db_1.dbPgMain.query(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => {
+                    db_1.dbPgMain.query(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => __awaiter(void 0, void 0, void 0, function* () {
                         /*
                          authSql.KeepLoginQuery,
                          sqlParam, (err: Error, results: RowDataPacket[]) => {
@@ -247,7 +246,8 @@ const authController = {
                             //user ditemukan. pasword benar, berhasil login 
                             if (results.rows.length > 0) {
                                 let rawData = results.rows[0];
-                                console.log("rawData.id + ", (0, IDGenerator_1.sealStampGenerator)(rawData.id, "A_KL"));
+                                // // spare ini untuk event logger
+                                // sealStampGenerator(rawData.id, "A_KL")
                                 if (results.rows[0].suspended) {
                                     customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uname}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                                     res.status(201).send({
@@ -263,7 +263,8 @@ const authController = {
                                         uname: results.rows[0].uname,
                                         uID: results.rows[0].public_share_id
                                     };
-                                    encrypt_1.default.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
+                                    const tokek = yield encrypt_1.default.setCookie(res, rawDataToken, results.rows[0].stay_log_for);
+                                    yield (0, updateSesion_1.default)(results.rows[0].id, JSON.stringify(tokek), results.rows[0].stay_log_for);
                                     // res.status(200).send({ msg, data, success })
                                     res.status(200).send({
                                         msg: `Hello :) `,
@@ -289,7 +290,7 @@ const authController = {
                                 customConsole_1.concol.bright(location, timestamp, "error uid not valid  ", customConsole_1.colorTx.Red, customConsole_1.colorBg.White);
                             }
                         }
-                    });
+                    }));
                 }
                 else {
                     //token or userdata is not provided properly

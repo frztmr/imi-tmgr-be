@@ -90,7 +90,7 @@ const encrypt = {
             dataToken,
             process.env.SECURITY_TOKEN_KEY || 'kepo_lu_anjir',
             { expiresIn: durationInMs }
-        )
+        ) 
 
         /*
          MAX AGE: 
@@ -114,7 +114,7 @@ const encrypt = {
         } catch (error) {
             concol.plain(queryLocation, timestamp, "failed generated cookie " + error, colorTx.White, colorBg.Red)
         } finally {
-            return {tokek}
+            return tokek
         }
 
 
