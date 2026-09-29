@@ -17,6 +17,7 @@ const encrypt_1 = __importDefault(require("../../config/encrypt"));
 const customConsole_1 = require("../../config/customConsole");
 const authSqlQuery_1 = require("./authSqlQuery");
 const IDGenerator_1 = require("../../config/IDGenerator");
+const updateSesion_1 = __importDefault(require("./updateSesion"));
 /*
 auth diantaranya:
 - login,
@@ -150,8 +151,8 @@ const authController = {
                                                         uname: resLogin.rows[0].uname,
                                                         uID: resLogin.rows[0].public_share_id
                                                     };
-                                                    encrypt_1.default
-                                                        .setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                    const tokek = encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                    (0, updateSesion_1.default)(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for);
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
                                                         msg: `welcome `,
@@ -306,15 +307,23 @@ const authController = {
         let date = new Date();
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => Keep_login =>';
         try {
-            encrypt_1.default.clearCookie(res);
-            customConsole_1.concol.plain(location, timestamp, ` => log out 📤`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
-            res.status(200).send("successfuly clear cookies");
+            const uname = req.dataToken.uname;
+            const sqlParamInvalidateSesion = [uname];
+            db_1.dbPgMain.query(authSqlQuery_1.authSql.invalidateSesion, sqlParamInvalidateSesion, (errUpdateSesion) => {
+                if (errUpdateSesion) {
+                    customConsole_1.concol.bright(location, timestamp, `Error while update sesion! : ${errUpdateSesion}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
+                    res.status(500).send(`error clear cookies for ${uname} : ${errUpdateSesion}`);
+                }
+                else {
+                    customConsole_1.concol.bright(location, timestamp, `succesfully logout for ${uname} ! `, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
+                    encrypt_1.default.clearCookie(res);
+                    res.status(200).send(`Good Bye ${uname} `);
+                }
+            });
         }
         catch (error) {
             customConsole_1.concol.plain(location, timestamp, ` => FAIL to log out 📤 ❌`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
-            res.status(500).send("successfuly clear cookies");
         }
     }),
-    // keepLogin: ()
 };
 exports.default = authController;

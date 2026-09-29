@@ -76,7 +76,7 @@ exports.authSql = {
         expired)
     VALUES ( 
         $1,
-        S2,
+        $S2,
         now(),
         $3);
 
@@ -89,4 +89,13 @@ exports.authSql = {
         expired = $3
     WHERE user_id = $1 
     `,
+    invalidateSesion: `
+    UPDATE auth.sesi 
+    SET  
+       invalidate = true
+    WHERE user_id IN (
+        SELECT id 
+        FROM auth.users 
+        WHERE uname = $1 
+    );`,
 };

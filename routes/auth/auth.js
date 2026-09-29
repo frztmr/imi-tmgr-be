@@ -11,7 +11,7 @@ const authRouter = express_1.default.Router();
 authRouter.post('/login', index_1.authController.login);
 authRouter.get('/check', index_1.authController.loginReady);
 authRouter.get('/keep_login', encrypt_1.default.decodeCookies, index_1.authController.keepLogin);
-authRouter.get('/log_out', index_1.authController.logOut);
+authRouter.get('/log_out', encrypt_1.default.decodeCookies, index_1.authController.logOut);
 exports.default = authRouter;
 /*
 

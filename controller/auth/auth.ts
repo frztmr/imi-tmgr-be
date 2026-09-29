@@ -8,6 +8,7 @@ import { authSql } from './authSqlQuery'
 import { error } from 'console';
 import { sealStampGenerator } from '../../config/IDGenerator'
 import { QueryResult } from 'pg';
+import updateSesion from './updateSesion';
 
 
 /* 
@@ -217,9 +218,8 @@ const authController = {
                                                                 uID: resLogin.rows[0].public_share_id
                                                             }
 
-                                                            encrypt
-                                                                .setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
-
+                                                            const tokek = encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                            updateSesion(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for)
 
 
                                                             //tutup comm ke frontend
@@ -476,19 +476,39 @@ const authController = {
         let timestamp = yellowTerminal + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => Keep_login =>';
 
         try {
-            encrypt.clearCookie(res);
+            const uname = req.dataToken.uname
+            const sqlParamInvalidateSesion = [uname]
+            dbPgMain.query(authSql.invalidateSesion, sqlParamInvalidateSesion,
+                (errUpdateSesion: Error) => {
 
-            concol.plain(location, timestamp, ` => log out 📤`, colorTx.Yellow, colorBg.Black)
-            res.status(200).send("successfuly clear cookies");
+                    if (errUpdateSesion) {
+                        concol.bright(
+                            location,
+                            timestamp,
+                            `Error while update sesion! : ${errUpdateSesion}`,
+                            colorTx.White, colorBg.Green
+                        )
+                        res.status(500).send(`error clear cookies for ${uname} : ${errUpdateSesion}`);
+                    } else {
+
+                        concol.bright(
+                            location,
+                            timestamp,
+                            `succesfully logout for ${uname} ! `,
+                            colorTx.White, colorBg.Green
+                        )
+                        encrypt.clearCookie(res);
+                        res.status(200).send(`Good Bye ${uname} `);
+                    }
+                })
+
 
         } catch (error) {
             concol.plain(location, timestamp, ` => FAIL to log out 📤 ❌`, colorTx.Yellow, colorBg.Black)
 
-            res.status(500).send("successfuly clear cookies");
         }
 
-    },
-    // keepLogin: ()
+    }, 
 }
 export default authController
 

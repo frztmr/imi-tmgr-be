@@ -73,7 +73,7 @@ const encrypt = {
         }
 
     },
-    setCookie: async (res: Response, dataToken: DataToken, expiresInSeconds?: number) => {
+    setCookie: async (res: Response, dataToken: DataToken, expiresInSeconds?: number): Promise<String> => {
 
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
@@ -101,7 +101,7 @@ const encrypt = {
          */
 
         try {
-             res.cookie("tokek", tokek, {
+            res.cookie("tokek", tokek, {
                 httpOnly: true,
                 // secure: cookieSecureParameter, // use true in production with HTTPS  
                 secure: false, // use true in production with HTTPS  
@@ -113,6 +113,8 @@ const encrypt = {
             concol.plain(queryLocation, timestamp, "cookie generated and thrown to client", colorTx.White, colorBg.Blue)
         } catch (error) {
             concol.plain(queryLocation, timestamp, "failed generated cookie " + error, colorTx.White, colorBg.Red)
+        } finally {
+            return tokek
         }
 
 
