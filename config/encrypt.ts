@@ -125,7 +125,7 @@ const encrypt = {
 
         if (req.cookies) {
             // concol.bright(queryLocation,timestamp,`isi cookies ${req.cookies} `, colorTx.Green, colorBg.Red)
-            console.log("req.cookies?.['tokek']", req.cookies?.['tokek'])
+            // console.log("req.cookies?.['tokek']", req.cookies?.['tokek'])
 
             if (!(req.cookies?.['tokek'])) { //case ini jika gak ada token
 

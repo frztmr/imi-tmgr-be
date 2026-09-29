@@ -112,6 +112,7 @@ const authController = {
                                             else {
                                                 //cek hasil login apakah username 
                                                 // dan password benar atau tidak
+                                                // INI CASE JIKA PASSWORD SALAH
                                                 if (resLogin.rows.length <= 0) {
                                                     // ini case salah password
                                                     res.status(201).send({
@@ -140,7 +141,7 @@ const authController = {
                                                     data ini akan dilempar ke frontend tanpa enkripsi
                                                     dan akan disimpan di global state redux
                                                     */
-                                                    //set cookie ini, untuk refresh token
+                                                    // set cookie ini, untuk refresh token
                                                     // ini harus di atas dari res. 
                                                     // karena tidak bisa kirim res 2x. 
                                                     // di sini langkah mengirim header, 
@@ -149,7 +150,8 @@ const authController = {
                                                         uname: resLogin.rows[0].uname,
                                                         uID: resLogin.rows[0].public_share_id
                                                     };
-                                                    encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                    encrypt_1.default
+                                                        .setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
                                                         msg: `welcome `,
@@ -161,6 +163,7 @@ const authController = {
                                                         },
                                                         ui_configuration: resLogin.rows[0].ui_configuration
                                                     });
+                                                    console.log("rawData.id + ", (0, IDGenerator_1.sealStampGenerator)(resLogin.rows[0].id, "A_LI"));
                                                     customConsole_1.concol.plain(location, timestamp, `=> login "${uname}" berhasil`, customConsole_1.colorTx.Green, customConsole_1.colorBg.Black);
                                                     //reset attempt login
                                                     const userID = resCheckUser.rows[0].id;
@@ -222,7 +225,6 @@ const authController = {
                 // console.log("yes, ada cookie isinya ", userData);
                 if (userData) {
                     let sqlParam = [userData.uname];
-                    console.log("ID + ", (0, IDGenerator_1.sealStampGenerator)(userData, "A_KL"));
                     db_1.dbPgMain.query(authSqlQuery_1.authSql.KeepLoginQuery, sqlParam, (err, results) => {
                         /*
                          authSql.KeepLoginQuery,
@@ -237,6 +239,7 @@ const authController = {
                             //user ditemukan. pasword benar, berhasil login 
                             if (results.rows.length > 0) {
                                 let rawData = results.rows[0];
+                                console.log("rawData.id + ", (0, IDGenerator_1.sealStampGenerator)(rawData.id, "A_KL"));
                                 if (results.rows[0].suspended) {
                                     customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${userData.uid}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                                     res.status(201).send({

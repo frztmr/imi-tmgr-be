@@ -56,4 +56,35 @@ export const authSql = {
     AND u.suspended IS NOT TRUE
     LIMIT 1;
     `,
+    checkSesion: `
+    SELECT
+        refresh_token
+    FROM
+        auth.sesi s
+    WHERE
+        s.user_id = $1;
+    `,
+    injectSesion: `
+    INSERT
+	INTO
+    auth.sesi(
+        user_id,
+        refresh_token,
+        last_refresh_token_generated,
+        expired)
+    VALUES ( 
+        $1,
+        S2,
+        now(),
+        $3);
+
+    `,
+    updateSesion: `
+    UPDATE auth.sesi 
+    SET 
+        refresh_token = $2,
+        last_refresh_token_generated = now(),
+        expired = $3
+    WHERE user_id = $1 
+    `,
 }

@@ -153,6 +153,8 @@ const authController = {
                                                         //cek hasil login apakah username 
                                                         // dan password benar atau tidak
 
+
+                                                        // INI CASE JIKA PASSWORD SALAH
                                                         if (resLogin.rows.length <= 0) {
 
                                                             // ini case salah password
@@ -205,7 +207,7 @@ const authController = {
                                                             dan akan disimpan di global state redux
                                                             */
 
-                                                            //set cookie ini, untuk refresh token
+                                                            // set cookie ini, untuk refresh token
                                                             // ini harus di atas dari res. 
                                                             // karena tidak bisa kirim res 2x. 
                                                             // di sini langkah mengirim header, 
@@ -214,7 +216,11 @@ const authController = {
                                                                 uname: resLogin.rows[0].uname,
                                                                 uID: resLogin.rows[0].public_share_id
                                                             }
-                                                            encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+
+                                                            encrypt
+                                                                .setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+
+
 
                                                             //tutup comm ke frontend
                                                             res.status(200).send({
@@ -228,6 +234,10 @@ const authController = {
                                                                 ui_configuration: resLogin.rows[0].ui_configuration
                                                             });
 
+                                                            console.log("rawData.id + ",
+                                                                sealStampGenerator(resLogin.rows[0].id, "A_LI"),
+                                                                //A: auth, LI, LogIn
+                                                            )
                                                             concol.plain(
                                                                 location,
                                                                 timestamp,
@@ -337,9 +347,7 @@ const authController = {
 
                     let sqlParam: [String] = [userData.uname];
 
-                    console.log("ID + ",
-                        sealStampGenerator(userData, "A_KL"), 
-                    )
+
 
                     dbPgMain.query(
                         authSql.KeepLoginQuery, sqlParam,
@@ -361,9 +369,14 @@ const authController = {
                             } else {
 
                                 //user ditemukan. pasword benar, berhasil login 
-                                if (results.rows.length > 0) { 
+                                if (results.rows.length > 0) {
 
                                     let rawData = results.rows[0];
+
+                                    console.log("rawData.id + ",
+                                        sealStampGenerator(rawData.id, "A_KL"),
+                                        //A: auth, KL, KeepLogin
+                                    );
 
                                     if (results.rows[0].suspended) {
 
@@ -404,7 +417,12 @@ const authController = {
                                             // ui_configuration: resLogin.rows[0].ui_configuration
                                         });
 
-                                        concol.plain(location, timestamp, ` => keepLogin "${rawData.uid}" berhasil`, colorTx.Yellow, colorBg.Black)
+                                        concol.plain(
+                                            location,
+                                            timestamp,
+                                            ` => keepLogin "${rawData.uid}" berhasil`,
+                                            colorTx.Yellow, colorBg.Black
+                                        )
 
 
                                     }

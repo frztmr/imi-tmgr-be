@@ -96,13 +96,13 @@ const encrypt = {
         }
     }),
     decodeCookies: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a, _b;
+        var _a;
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
         if (req.cookies) {
             // concol.bright(queryLocation,timestamp,`isi cookies ${req.cookies} `, colorTx.Green, colorBg.Red)
-            console.log("req.cookies?.['tokek']", (_a = req.cookies) === null || _a === void 0 ? void 0 : _a['tokek']);
-            if (!((_b = req.cookies) === null || _b === void 0 ? void 0 : _b['tokek'])) { //case ini jika gak ada token
+            // console.log("req.cookies?.['tokek']", req.cookies?.['tokek'])
+            if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a['tokek'])) { //case ini jika gak ada token
                 customConsole_1.concol.plain(queryLocation, timestamp, " gak ada cookie", customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                 let msg = "there is no cookie to decode ";
                 let success = false;
