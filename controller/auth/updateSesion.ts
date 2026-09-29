@@ -56,7 +56,7 @@ const updateSession = async (id: String, tokek: any, expiredAt: number) => {
                                 concol.bright(
                                     location,
                                     timestamp,
-                                    `Error while update sesion! : ${errUpdateSesion}`,
+                                    ` Error while update sesion! : ${errUpdateSesion}`,
                                     colorTx.White, colorBg.Green
                                 )
                             } else {
@@ -76,14 +76,14 @@ const updateSession = async (id: String, tokek: any, expiredAt: number) => {
                                 concol.bright(
                                     location,
                                     timestamp,
-                                    `Error while Inject sesion! : ${errInjectSesion}`,
+                                    ` Error while Inject sesion! : ${errInjectSesion}`,
                                     colorTx.White, colorBg.Red
                                 )
                             } else {
                                 concol.bright(
                                     location,
                                     timestamp,
-                                    `succesfully Inject Sesion! `,
+                                    ` succesfully Inject Sesion! `,
                                     colorTx.White, colorBg.Green
                                 )
                             }

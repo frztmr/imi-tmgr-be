@@ -73,7 +73,7 @@ const encrypt = {
         }
 
     },
-    setCookie: async (res: Response, dataToken: DataToken, expiresInSeconds?: number): Promise<String> => {
+    setCookie: async (res: Response, dataToken: DataToken, expiresInSeconds?: number) => {
 
         let date = new Date();
         let timestamp = date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
@@ -114,7 +114,7 @@ const encrypt = {
         } catch (error) {
             concol.plain(queryLocation, timestamp, "failed generated cookie " + error, colorTx.White, colorBg.Red)
         } finally {
-            return tokek
+            return {tokek}
         }
 
 
@@ -142,8 +142,7 @@ const encrypt = {
                     let cookies: string = req.cookies['tokek'];
 
                     const decoded = jwt.verify(cookies, process.env.SECURITY_TOKEN_KEY || "fedsvaihnu");
-                    (req as any).dataToken = decoded; // decoding token
-                    console.log("decoded", decoded)
+                    (req as any).dataToken = decoded; // decoding token 
                     next();
                     concol.plain(queryLocation, timestamp, "eating (decoding) cookie ", colorTx.White, colorBg.Black)
 

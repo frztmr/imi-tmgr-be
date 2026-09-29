@@ -152,6 +152,7 @@ const authController = {
                                                         uID: resLogin.rows[0].public_share_id
                                                     };
                                                     const tokek = encrypt_1.default.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                    console.log("isi tokek: ", tokek);
                                                     (0, updateSesion_1.default)(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for);
                                                     //tutup comm ke frontend
                                                     res.status(200).send({
@@ -174,6 +175,12 @@ const authController = {
                                                     db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQuery, updateLoginAttemptParam, (errUpdateAttept) => {
                                                         if (errUpdateAttept) {
                                                             customConsole_1.concol.bright("auth", timestamp, `auth error at reset login attempt value : ${errUpdateAttept}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Yellow);
+                                                        }
+                                                    });
+                                                    const updateLoginAttemptValidateParam = [userID];
+                                                    db_1.dbPgMain.query(authSqlQuery_1.authSql.loginUpdateAttemptQueryValidate, updateLoginAttemptValidateParam, (errUpdateAttept) => {
+                                                        if (errUpdateAttept) {
+                                                            customConsole_1.concol.bright("auth", timestamp, `auth error at unvalidate sesion login for ${userID} value : ${errUpdateAttept}`, customConsole_1.colorTx.Red, customConsole_1.colorBg.Yellow);
                                                         }
                                                     });
                                                 }
@@ -242,7 +249,7 @@ const authController = {
                                 let rawData = results.rows[0];
                                 console.log("rawData.id + ", (0, IDGenerator_1.sealStampGenerator)(rawData.id, "A_KL"));
                                 if (results.rows[0].suspended) {
-                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${userData.uid}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
+                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uname}" udah gak boleh login`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                                     res.status(201).send({
                                         msg: "Whoops! Please try to login!",
                                         data: {},
@@ -268,7 +275,7 @@ const authController = {
                                         },
                                         // ui_configuration: resLogin.rows[0].ui_configuration
                                     });
-                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uid}" berhasil`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
+                                    customConsole_1.concol.plain(location, timestamp, ` => keepLogin "${rawData.uname}" berhasil`, customConsole_1.colorTx.Yellow, customConsole_1.colorBg.Black);
                                 }
                             }
                             else {

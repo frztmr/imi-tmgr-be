@@ -95,7 +95,7 @@ const encrypt = {
             customConsole_1.concol.plain(queryLocation, timestamp, "failed generated cookie " + error, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
         }
         finally {
-            return tokek;
+            return { tokek };
         }
     }),
     decodeCookies: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -115,8 +115,7 @@ const encrypt = {
                 try {
                     let cookies = req.cookies['tokek'];
                     const decoded = jsonwebtoken_1.default.verify(cookies, process.env.SECURITY_TOKEN_KEY || "fedsvaihnu");
-                    req.dataToken = decoded; // decoding token
-                    console.log("decoded", decoded);
+                    req.dataToken = decoded; // decoding token 
                     next();
                     customConsole_1.concol.plain(queryLocation, timestamp, "eating (decoding) cookie ", customConsole_1.colorTx.White, customConsole_1.colorBg.Black);
                 }

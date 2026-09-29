@@ -219,6 +219,7 @@ const authController = {
                                                             }
 
                                                             const tokek = encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);
+                                                            console.log("isi tokek: ", tokek)
                                                             updateSesion(resLogin.rows[0].id, tokek, resLogin.rows[0].stay_log_for)
 
 
@@ -266,6 +267,23 @@ const authController = {
                                                                             "auth",
                                                                             timestamp,
                                                                             `auth error at reset login attempt value : ${errUpdateAttept}`,
+                                                                            colorTx.Red, colorBg.Yellow
+                                                                        )
+                                                                    }
+
+                                                                }
+                                                            )
+                                                            const updateLoginAttemptValidateParam: [string] = [userID]
+                                                            dbPgMain.query(
+                                                                authSql.loginUpdateAttemptQueryValidate,
+                                                                updateLoginAttemptValidateParam,
+                                                                (errUpdateAttept: Error) => {
+
+                                                                    if (errUpdateAttept) {
+                                                                        concol.bright(
+                                                                            "auth",
+                                                                            timestamp,
+                                                                            `auth error at unvalidate sesion login for ${userID} value : ${errUpdateAttept}`,
                                                                             colorTx.Red, colorBg.Yellow
                                                                         )
                                                                     }
@@ -382,7 +400,7 @@ const authController = {
 
                                         concol.plain(
                                             location, timestamp,
-                                            ` => keepLogin "${userData.uid}" udah gak boleh login`,
+                                            ` => keepLogin "${rawData.uname}" udah gak boleh login`,
                                             colorTx.Yellow, colorBg.Black
                                         )
 
@@ -420,7 +438,7 @@ const authController = {
                                         concol.plain(
                                             location,
                                             timestamp,
-                                            ` => keepLogin "${rawData.uid}" berhasil`,
+                                            ` => keepLogin "${rawData.uname}" berhasil`,
                                             colorTx.Yellow, colorBg.Black
                                         )
 
@@ -508,7 +526,7 @@ const authController = {
 
         }
 
-    }, 
+    },
 }
 export default authController
 

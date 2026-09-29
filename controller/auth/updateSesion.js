@@ -45,7 +45,7 @@ const updateSession = (id, tokek, expiredAt) => __awaiter(void 0, void 0, void 0
             if (resCheckUser.rows.length > 0) { // jika lebih dari satu 
                 db_1.dbPgMain.query(authSqlQuery_1.authSql.updateSesion, sqlParamUpdateInjectSesion, (errUpdateSesion) => {
                     if (errUpdateSesion) {
-                        customConsole_1.concol.bright(location, timestamp, `Error while update sesion! : ${errUpdateSesion}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
+                        customConsole_1.concol.bright(location, timestamp, ` Error while update sesion! : ${errUpdateSesion}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
                     }
                     else {
                         customConsole_1.concol.bright(location, timestamp, `succesfully Update Sesion! `, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
@@ -55,10 +55,10 @@ const updateSession = (id, tokek, expiredAt) => __awaiter(void 0, void 0, void 0
             else { // ini kalau sesinya BELUM ada.
                 db_1.dbPgMain.query(authSqlQuery_1.authSql.injectSesion, sqlParamUpdateInjectSesion, (errInjectSesion) => {
                     if (errInjectSesion) {
-                        customConsole_1.concol.bright(location, timestamp, `Error while Inject sesion! : ${errInjectSesion}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
+                        customConsole_1.concol.bright(location, timestamp, ` Error while Inject sesion! : ${errInjectSesion}`, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
                     }
                     else {
-                        customConsole_1.concol.bright(location, timestamp, `succesfully Inject Sesion! `, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
+                        customConsole_1.concol.bright(location, timestamp, ` succesfully Inject Sesion! `, customConsole_1.colorTx.White, customConsole_1.colorBg.Green);
                     }
                 });
             }

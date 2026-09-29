@@ -40,6 +40,13 @@ exports.authSql = {
     last_login_attempt = now()
     WHERE id = $2 ;
     `,
+    loginUpdateAttemptQueryValidate: ` 
+    UPDATE auth.sesi 
+    SET  
+       invalidate = false
+    WHERE id = $1 
+    ); ;
+    `,
     KeepLoginQuery: ` 
     SELECT
         u.id, 
@@ -74,9 +81,8 @@ exports.authSql = {
         refresh_token,
         last_refresh_token_generated,
         expired)
-    VALUES ( 
-        $1,
-        $S2,
+    VALUES ( $1,
+        $2,
         now(),
         $3);
 
