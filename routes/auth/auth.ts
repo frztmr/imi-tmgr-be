@@ -1,16 +1,16 @@
 
 import express from "express";
 // import authController from '../../controller/auth/auth';
-import { authController } from '../../controller/index';
+import { authController } from '../../controller/';
 import encrypt from "../../config/encrypt";
 
 
 const authRouter = express.Router();
 
-authRouter.post('/login', authController.login);
-authRouter.get('/check', authController.loginReady);
+authRouter.post('/login', authController.LogIn);
+authRouter.get('/check', authController.LoginReady);
 authRouter.get('/keep_login', encrypt.decodeCookies, authController.keepLogin);
-authRouter.get('/log_out', encrypt.decodeCookies, authController.logOut);
+authRouter.get('/log_out', encrypt.decodeCookies, authController.LogOut);
 
 export default authRouter;
 
