@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ui = void 0;
+exports.setting = exports.ui = void 0;
 exports.ui = {
     getSidebarMenu: `
     SELECT 
@@ -21,4 +21,9 @@ exports.ui = {
     WHERE
         ti.is_active = TRUE
 	AND ti.is_global = TRUE;`
+};
+exports.setting = {
+    getMenuSetting: `
+    
+    `
 };

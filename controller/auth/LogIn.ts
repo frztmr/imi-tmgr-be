@@ -59,7 +59,7 @@ export const LogIn = async (req: Request, res: Response) => {
                             // cek apakah percobaan login 
                             // lebih dari batas yang ditentukan
                             if (isSuspended) {
-                                res.status(201).send({
+                                res.status(401).send({
                                     msg: "Cannot Proceed Login, Please contact your Team administrator",
                                     data: {},
                                     ui_configuration: {}
@@ -71,7 +71,7 @@ export const LogIn = async (req: Request, res: Response) => {
                                 if (timeDifference < COOLDOWN_MS) {
                                     const remainingSeconds = Math.ceil((COOLDOWN_MS - timeDifference) / 1000);
 
-                                    res.status(201).send({
+                                    res.status(401).send({
                                         msg: `Whoops! Too fast! please wait ${remainingSeconds} seconds more!`,
                                         data: {},
                                         ui_configuration: {}
@@ -129,8 +129,8 @@ export const LogIn = async (req: Request, res: Response) => {
 
                                                         // ini case salah password
 
-                                                        res.status(201).send({
-                                                            msg: "wrong password",
+                                                        res.status(401).send({
+                                                            msg: "Whoops! invalid credential!",
                                                             personal: {
                                                                 uname: '',
                                                                 pid: '',

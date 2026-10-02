@@ -1,6 +1,6 @@
 import { getSettings } from "./getSettings";
 
 
-export {
+export default {
     getSettings
 }

@@ -18,5 +18,11 @@ export const ui = {
         inventory_stock.ui.transaction_item ti
     WHERE
         ti.is_active = TRUE
-	AND ti.is_global = TRUE;` 
+	AND ti.is_global = TRUE;`
+}
+
+export const setting = {
+    getMenuSetting: `
+    
+    `
 }

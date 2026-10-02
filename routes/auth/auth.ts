@@ -1,6 +1,6 @@
 
 import express from "express";
-// import authController from '../../controller/auth/auth';
+
 import { authController } from '../../controller/';
 import encrypt from "../../config/encrypt";
 

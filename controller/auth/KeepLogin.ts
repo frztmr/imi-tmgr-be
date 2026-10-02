@@ -69,9 +69,9 @@ export const keepLogin = async (req: Request, res: Response) => {
                                         colorTx.Yellow, colorBg.Black
                                     )
 
-                                    res.status(201).send(
+                                    res.status(401).send(
                                         {
-                                            msg: "Whoops! Please try to login!",
+                                            msg: "Whoops, Something went wrong! please contact your local admin!",
                                             data: {},
                                             success: false,
                                             tokek: ''
@@ -114,9 +114,9 @@ export const keepLogin = async (req: Request, res: Response) => {
 
                             } else {
                                 //salah password, tidak ada data ditemukan 
-                                res.status(201).send(
+                                res.status(401).send(
                                     {
-                                        msg: "Whoops, something went wrong",
+                                        msg: "Whoops, Invalid credential",
                                         data: {},
                                         success: false,
                                         tokek: ''
@@ -133,7 +133,7 @@ export const keepLogin = async (req: Request, res: Response) => {
                 //token or userdata is not provided properly
                 res.status(401).send(
                     {
-                        msg: "tidak ada user data yang didecode",
+                        msg: "Whopps! invalid credential!",
                         data: {},
                         success: false,
                         tokek: ''
