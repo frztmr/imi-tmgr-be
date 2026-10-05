@@ -10,15 +10,15 @@ let yellowTerminal = "\x1b[33m";
 const getSettings = (req, res) => {
     let date = new Date();
     let timestamp = customConsole_1.colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
-    if (req.dataToken.uID) { // cari public share id
-        let sqlParam = [req.dataToken.uID];
-        db_1.dbPgMainQuery.query(uiQueryPg_1.ui.getTransactionAction, (err, results) => {
+    if (req.dataToken.uname) { // cari public share id
+        let sqlParam = [req.dataToken.uname];
+        db_1.dbPgMain.query(uiQueryPg_1.setting.getMenuSetting, sqlParam, (err, results) => {
             if (err) {
-                res.status(500).send("Error 500 at /ui/trx_action");
+                res.status(500).send("Error 500 at /ui/settings");
                 customConsole_1.concol.bright(location, timestamp, "/ui/side_menu => error at sideMenu" + err, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
             }
             else {
-                res.status(200).send(results);
+                res.status(200).send(results.rows);
                 customConsole_1.concol.bright(location, timestamp, "/ui/side_menu => success", customConsole_1.colorTx.White, customConsole_1.colorBg.Black);
             }
         });

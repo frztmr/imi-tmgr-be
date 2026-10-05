@@ -24,6 +24,15 @@ exports.ui = {
 };
 exports.setting = {
     getMenuSetting: `
-    
+    SELECT
+        s.link, s.logo, s.title, s.subtitle 
+    FROM
+        auth.users u
+    LEFT JOIN auth.rization r ON
+        u.id = r.users_id
+    LEFT JOIN ui.settings s ON
+        r.roles_id = ANY(s.allowed_roles::TEXT[])
+    WHERE
+        u.uname =  $1;
     `
 };
