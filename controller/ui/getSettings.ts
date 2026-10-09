@@ -7,7 +7,7 @@ import { setting } from './uiQueryPg';
 let location: string = "/ui/setting";
 let yellowTerminal = "\x1b[33m";
 
-export const getSettings = (req: Request, res: Response) => {
+export const getSettings = async (req: Request, res: Response) => {
 
     let date = new Date();
     let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
