@@ -27,4 +27,4 @@ export const addNewPost = async (req: Request, res: Response) => {
     }
 }
 
-// saya sudah siapkan endpoint api untuk dikirim ke backend. /post/new
+// saya sudah siapkan endpoint api untuk dikirim ke backend. kirim semua data ke: endpoint /post/new
