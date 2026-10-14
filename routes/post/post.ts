@@ -4,9 +4,13 @@ import encrypt from "../../config/encrypt";
 
 const postRouter = express.Router();
 
-postRouter.post('/new',
+postRouter.post('/new_post',
     encrypt.decodeCookies,
-    postController.addNewPost
-)
+    postController.newPost
+);
+postRouter.post('/new_tag',
+    encrypt.decodeCookies,
+    postController.newTag
+);
 
 export default postRouter;

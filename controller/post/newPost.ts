@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { newPost } from './post.sql';
+import { newPostSql } from './post.sql';
 
-export const addNewPost = async (req: Request, res: Response) => {
+export const newPost = async (req: Request, res: Response) => {
 
     let date = new Date();
     let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
@@ -17,7 +17,7 @@ export const addNewPost = async (req: Request, res: Response) => {
         
         if (req.body) {
             res.status(200).send("ok")
-            console.log("req.body :", req.body)
+            console.log("req.body :", req.body) 
             
         } else {
             res.status(200).send("ok no req body")

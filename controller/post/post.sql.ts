@@ -1,3 +1,3 @@
-export const newPost = {
+export const newPostSql = {
     
 }

@@ -1,6 +1,8 @@
-import { addNewPost } from "./newPost";
+import { newPost } from "./newPost";
+import { newTag } from "./newTag";
 
 
 export default {
-    addNewPost
+    newPost,
+    newTag
 };
