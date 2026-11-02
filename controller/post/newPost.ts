@@ -14,16 +14,22 @@ export const newPost = async (req: Request, res: Response) => {
 
 
         let sqlParam: [string] = [req.dataToken.uname];
-        
+
         if (req.body) {
-            res.status(200).send("ok")
-            console.log("req.body :", req.body) 
+
             
+            res.status(200).send({
+                msg: "successfully added"
+            })
+            console.log("req.body :", req.body)
+
         } else {
-            res.status(200).send("ok no req body")
+            res.status(204).send({
+                msg: "request body is not proper"
+            })
 
         }
-        
+
     }
 }
 
