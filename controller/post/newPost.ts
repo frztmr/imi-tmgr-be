@@ -13,15 +13,18 @@ export const newPost = async (req: Request, res: Response) => {
 
 
 
-        let sqlParam: [string] = [req.dataToken.uname];
+        let sqlParam: [string] = [req.dataToken.uID];
 
+        console.log("sqlParam", sqlParam)
+        
         if (req.body) {
 
-            
+
             res.status(200).send({
                 msg: "successfully added"
             })
             console.log("req.body :", req.body)
+            console.log("req.dataToken :", req.dataToken)
 
         } else {
             res.status(204).send({
@@ -30,6 +33,11 @@ export const newPost = async (req: Request, res: Response) => {
 
         }
 
+    } else {
+
+        res.status(401).send({
+            msg: "unauthorized"
+        })
     }
 }
 
