@@ -15,32 +15,32 @@ export const newPost = async (req: Request, res: Response) => {
         let getIDsqlParam: [string] = [req.dataToken.psid];
 
         dbPgMain.query(                             // validate user
-            newPostSql.verifyUser, getIDsqlParam,    
-            (err: any, resVerifyUser: any) => {      
+            newPostSql.verifyUser, getIDsqlParam,
+            (err: any, resVerifyUser: any) => {
 
                 const user_id = resVerifyUser.rows[0].id // validate user
 
                 if (user_id) {                  // validate user
 
                     if (req.body) {             // validate req.body
-
+ 
                         let {
-                            kind,
-                            tag,
-                            text,
-                            location,
-                            contact,
-                            impression,
-                            expiresAt,
-                            poll,
-                            visibility,
-                            allowedViewers,
-                            teamId,
-                            status,
-                            photos,
-                            attachments,
-                            expense,
-                            feeling
+                            kind, // string
+                            eventDate, // datetime/string
+                            tag, // array
+                            text, //text
+                            location, //string
+                            contact, // string
+                            impression, // string
+                            expiresAt, //datetime
+                            poll, //id
+                            visibility, // string
+                            allowedViewers, //array
+                            teamId, // string
+                            status, // string
+                            photos, // array jadi id aja di sini
+                            attachments, // array jadi id aja di sini
+                            expense     //number 
                         } = req.body
 
 
@@ -52,7 +52,7 @@ export const newPost = async (req: Request, res: Response) => {
                         res.status(204).send({
                             msg: "request body is not proper"
                         })
-                        
+
                     }
                 } else {
 
