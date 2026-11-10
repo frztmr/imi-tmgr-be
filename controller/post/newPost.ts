@@ -13,7 +13,7 @@ export const newPost = async (req: Request, res: Response) => {
 
 
 
-        let sqlParam: [string] = [req.dataToken.uID];
+        let sqlParam: [string] = [req.dataToken.psid];
 
         console.log("sqlParam", sqlParam)
         

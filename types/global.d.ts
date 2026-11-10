@@ -18,7 +18,7 @@ declare global {
     // };
     type DataToken = {
         uname: string
-        uID: string, 
+        psid: string, 
     };
     type InventoryData = [{
         matcode: number

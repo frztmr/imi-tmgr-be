@@ -184,7 +184,7 @@ export const LogIn = async (req: Request, res: Response) => {
                                                         // lalu next. gitu loh
                                                         let rawDataToken: any = {
                                                             uname: resLogin.rows[0].uname,
-                                                            uID: resLogin.rows[0].public_share_id
+                                                            psid: resLogin.rows[0].public_share_id
                                                         }
 
                                                         const tokek = await encrypt.setCookie(res, rawDataToken, resLogin.rows[0].stay_log_for);

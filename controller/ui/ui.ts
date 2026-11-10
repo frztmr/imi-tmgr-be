@@ -16,7 +16,7 @@ const uiController = {
         let date = new Date();
         let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
 
-        // if (req.dataToken.uid) {
+        // if (req.dataToken.psid) {
 
         // if (company_id) {
 
@@ -66,7 +66,7 @@ const uiController = {
         let date = new Date();
         let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
 
-        // if (req.dataToken.uid) { // spare for authorization variable
+        // if (req.dataToken.psid) { // spare for authorization variable
 
 
         // if (company_id) {

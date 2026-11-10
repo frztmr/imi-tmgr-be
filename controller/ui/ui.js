@@ -20,7 +20,7 @@ const uiController = {
     getSideMenu: (res) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
         let timestamp = customConsole_1.colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
-        // if (req.dataToken.uid) {
+        // if (req.dataToken.psid) {
         // if (company_id) {
         // let sqlParam: [number] = [company_id];
         db_1.dbPgMainQuery.query(uiQueryPg_1.ui.getSidebarMenu, (err, results) => {
@@ -49,7 +49,7 @@ const uiController = {
     getTransactionAction: (res) => __awaiter(void 0, void 0, void 0, function* () {
         let date = new Date();
         let timestamp = customConsole_1.colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
-        // if (req.dataToken.uid) { // spare for authorization variable
+        // if (req.dataToken.psid) { // spare for authorization variable
         // if (company_id) {
         // let sqlParam: [number] = [company_id];
         db_1.dbPgMainQuery.query(uiQueryPg_1.ui.getTransactionAction, (err, results) => {
