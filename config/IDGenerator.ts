@@ -42,7 +42,7 @@ export const sealStampGenerator = async (uname: string, type: string): Promise<s
 }
 export const post_id = async (uname: string) => {
 
-
+   
     let date = new Date();
     let timestamp = date.toLocaleDateString('id')
         + ' ' + date.toLocaleTimeString('id') + ' => ';
@@ -64,7 +64,7 @@ export const post_id = async (uname: string) => {
     )
         .update(text).digest('hex')
 */
-    const nanoid = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 30);
+    const nanoid = customAlphabet(process.env.ID_KEY_REQUIREMENT || "1234567890", 30);
 
     const id = nanoid();
     const gen_post_id: string = `${id}`;
