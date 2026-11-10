@@ -7,18 +7,28 @@ export const newPostSql = {
     WHERE
         u.public_share_id = $1  
     LIMIT 1;`,
-    injetPost: `
+    insertSimplePost: `
     INSERT
 	INTO
-    the_content.post(
-        post_id ,
-        refresh_token,
-        last_refresh_token_generated,
-        expired)
-    VALUES ( $1,
+    the_content.posts(
+        post_id,
+        author_id,
+        type,
+        visibility,
+        event_date,
+        latitude,
+        longitude,
+        body
+    ) VALUES ( 
+        $1,
         $2,
-        now(),
-        $3);
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8
+    );
 
     `
 }
