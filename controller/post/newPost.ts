@@ -11,27 +11,59 @@ export const newPost = async (req: Request, res: Response) => {
 
     if (req.dataToken.uname) { // cari public share id
 
+        // verify user 
+        let getIDsqlParam: [string] = [req.dataToken.psid];
+
+        dbPgMain.query(                             // validate user
+            newPostSql.verifyUser, getIDsqlParam,    
+            (err: any, resVerifyUser: any) => {      
+
+                const user_id = resVerifyUser.rows[0].id // validate user
+
+                if (user_id) {                  // validate user
+
+                    if (req.body) {             // validate req.body
+
+                        let {
+                            kind,
+                            tag,
+                            text,
+                            location,
+                            contact,
+                            impression,
+                            expiresAt,
+                            poll,
+                            visibility,
+                            allowedViewers,
+                            teamId,
+                            status,
+                            photos,
+                            attachments,
+                            expense,
+                            feeling
+                        } = req.body
 
 
-        let sqlParam: [string] = [req.dataToken.psid];
+                        res.status(200).send({
+                            msg: "successfully added"
+                        })
 
-        console.log("sqlParam", sqlParam)
-        
-        if (req.body) {
+                    } else {
+                        res.status(204).send({
+                            msg: "request body is not proper"
+                        })
+                        
+                    }
+                } else {
+
+                    res.status(401).send({
+                        msg: "user is invalid!"
+                    })
+
+                }
 
 
-            res.status(200).send({
-                msg: "successfully added"
             })
-            console.log("req.body :", req.body)
-            console.log("req.dataToken :", req.dataToken)
-
-        } else {
-            res.status(204).send({
-                msg: "request body is not proper"
-            })
-
-        }
 
     } else {
 
