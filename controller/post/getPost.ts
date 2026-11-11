@@ -5,6 +5,8 @@ import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { newPostSql, getPostSql } from './post.sql';
 import { post_id } from '../../config/IDGenerator'
 import { DatabaseError } from 'pg';
+import { Result } from 'ioredis';
+import { RowDataPacket } from 'mysql2';
 
 
 export const getSimplePost = async (req: Request, res: Response) => {
@@ -19,7 +21,7 @@ export const getSimplePost = async (req: Request, res: Response) => {
 
         dbPgMain.query(                             // validate user
             newPostSql.verifyUser, getIDsqlParam,
-            async (err: any, resVerifyUser: any) => {
+            async (err: Error, resVerifyUser: any) => {
 
                 const user_id: string = resVerifyUser.rows[0].id // validate user 
 
@@ -29,7 +31,7 @@ export const getSimplePost = async (req: Request, res: Response) => {
                     dbPgMain.query(                             // insert post
                         getPostSql.getSimplePost,
                         // user_id,
-                        (errGetSimplePost: Error) => {
+                        (errGetSimplePost: Error, resGetSimplePost: any) => {
 
                             if (errGetSimplePost) {
 
@@ -40,15 +42,19 @@ export const getSimplePost = async (req: Request, res: Response) => {
 
                             } else {
 
+                                const posts = resGetSimplePost.rows
+
+                                console.log("posts", posts)
                                 res.status(200).send({
-                                    msg: "successfully added"
+                                    msg: "successfully get posts",
+                                    posts
                                 });
 
                             }
 
                         })
 
- 
+
 
                 } else {
 
