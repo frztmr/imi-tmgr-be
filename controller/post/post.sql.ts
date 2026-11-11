@@ -30,5 +30,27 @@ export const newPostSql = {
         $8
     );
 
-    `
+    `,
+
+}
+export const getPostSql = {
+    getSimplePost: `
+SELECT 
+    u.uname,
+    u.public_share_id, 
+    p.body,  
+    p.created_at,
+    p.visibility,
+    p.location_literal,
+    p.longitude,
+    p.latitude,
+    p.reply_count, 
+    p.repost_count, 
+    p.is_edited 
+FROM the_content.posts p 
+LEFT JOIN auth.users u 
+ON p.author_id = u.id
+WHERE 
+    p.is_deleted IS NOT TRUE  `
+
 }

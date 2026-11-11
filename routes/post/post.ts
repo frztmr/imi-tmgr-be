@@ -12,5 +12,9 @@ postRouter.post('/new_tag',
     encrypt.decodeCookies,
     postController.newTag
 );
+postRouter.get('/simple_post',
+    encrypt.decodeCookies,
+    postController.getSimplePost
+);
 
 export default postRouter;
