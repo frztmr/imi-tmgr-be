@@ -16,5 +16,9 @@ postRouter.get('/simple_post',
     encrypt.decodeCookies,
     postController.getSimplePost
 );
+postRouter.get('/detail/:post_id',
+    encrypt.decodeCookies,
+    postController.detail
+);
 
 export default postRouter;

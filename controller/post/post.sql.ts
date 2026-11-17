@@ -54,6 +54,57 @@ export const getPostSql = {
     LEFT JOIN auth.users u 
     ON p.author_id = u.id
     WHERE 
-        p.is_deleted IS NOT TRUE  `
+        p.is_deleted IS NOT TRUE`
 
+}
+export const getPostDetail = {
+    getOnePost: `
+    SELECT 
+        u.uname,
+        u.public_share_id, 
+        p.body,
+        p.title,   
+        p.created_at,
+        p.visibility,
+        p.location_literal,
+        p.longitude,
+        p.latitude,
+        p.like_count,
+        p.reply_count, 
+        p.repost_count, 
+        p.is_edited,
+        p.post_id,
+        p.parent_id,
+        p.root_id   
+    FROM the_content.posts p 
+    LEFT JOIN auth.users u 
+    ON p.author_id = u.id
+    WHERE 
+        p.is_deleted IS NOT TRUE 
+        AND 
+        p.post_id = $1`,
+    getPostRoot: `
+    SELECT 
+        u.uname,
+        u.public_share_id, 
+        p.body,
+        p.title,   
+        p.created_at,
+        p.visibility,
+        p.location_literal,
+        p.longitude,
+        p.latitude,
+        p.like_count,
+        p.reply_count, 
+        p.repost_count, 
+        p.is_edited,
+        p.post_id,
+        p.parent_id,
+        p.root_id   
+    FROM the_content.posts p 
+    LEFT JOIN auth.users u 
+    ON p.author_id = u.id
+    WHERE  
+        p.parent_id = $1
+    `
 }
