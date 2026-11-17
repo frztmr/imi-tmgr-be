@@ -40,7 +40,7 @@ export const getSimplePost = async (req: Request, res: Response) => {
                                 });
                                 concol.bright( //error console
                                     location, timestamp,
-                                    `  unable to gather parent_id ${post_id} :   ${errGetSimplePost}`,
+                                    `  unable to gather :   ${errGetSimplePost}`,
                                     colorTx.White, colorBg.Red);
 
                             } else {
@@ -54,7 +54,7 @@ export const getSimplePost = async (req: Request, res: Response) => {
                                 });
                                 concol.bright(  //success console
                                     location, timestamp,
-                                    `  successfully gather post_id ${post_id}  `,
+                                    `  successfully gather post `,
                                     colorTx.White, colorBg.Black
                                 )
                             }

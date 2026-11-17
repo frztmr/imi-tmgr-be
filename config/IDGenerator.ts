@@ -54,8 +54,7 @@ export const post_id = async (uname: string) => {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-
-    const dateID = `${year}.${month}.${day}-${hours}:${minutes}:${seconds}`;
+ 
     /*
     return createHmac(
         // process.env.SECURITY_HASH_TYPE_INTEGRATION || 'sha256',
@@ -63,7 +62,7 @@ export const post_id = async (uname: string) => {
         process.env.SECURITY_HASH_KEY_INTEGRATION || 'hehehe_kepo lu'
     )
         .update(text).digest('hex')
-*/
+    */
     const nanoid = customAlphabet(process.env.ID_KEY_REQUIREMENT || "1234567890", 30);
 
     const id = nanoid();
