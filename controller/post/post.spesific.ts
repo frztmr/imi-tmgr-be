@@ -3,12 +3,12 @@ import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { newPostSql, getPostSql } from './post.sql';
-import { post_id } from '../../config/IDGenerator'
-import { DatabaseError } from 'pg';
-import { Result } from 'ioredis';
-import { RowDataPacket } from 'mysql2';
+// import { post_id } from '../../config/IDGenerator'
+import { Result } from 'pg';
 
-export const getSimplePost = async (req: Request, res: Response) => {
+const location: string = "/post/detail";
+
+export const detail = async (req: Request, res: Response) => {
 
     let date = new Date();
     let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';

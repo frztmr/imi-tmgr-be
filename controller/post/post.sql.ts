@@ -18,7 +18,8 @@ export const newPostSql = {
         event_date,
         latitude,
         longitude,
-        body
+        body,
+        title
     ) VALUES ( 
         $1,
         $2,
@@ -27,10 +28,9 @@ export const newPostSql = {
         $5,
         $6,
         $7,
-        $8
-    );
-
-    `,
+        $8,
+        $9 
+    );`,
 
 }
 export const getPostSql = {
@@ -38,7 +38,8 @@ export const getPostSql = {
     SELECT 
         u.uname,
         u.public_share_id, 
-        p.body,  
+        p.body,
+        p.title,   
         p.created_at,
         p.visibility,
         p.location_literal,

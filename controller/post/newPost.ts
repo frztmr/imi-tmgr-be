@@ -55,7 +55,8 @@ export const newPost = async (req: Request, res: Response) => {
                                 status, // string
                                 photos, // array jadi id aja di sini
                                 attachments, // array jadi id aja di sini
-                                expense     //number 
+                                expense,      //number 
+                                title     //varchar 
                             } = req.body
 
 
@@ -70,6 +71,7 @@ export const newPost = async (req: Request, res: Response) => {
                                 string, //$6
                                 string, //$7
                                 string, //$8
+                                string, //$9
                             ] = [
                                     get_post_id,    //$1
                                     user_id,        //$2
@@ -78,7 +80,8 @@ export const newPost = async (req: Request, res: Response) => {
                                     eventDate,      //$5
                                     latitude,       //$6
                                     longitude,      //$7
-                                    text            //$8
+                                    text,           //$8
+                                    title           //$9
                                 ];
 
                             dbPgMain.query(                             // insert post
