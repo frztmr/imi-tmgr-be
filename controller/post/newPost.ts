@@ -4,7 +4,7 @@ import { dbPgMain, dbPgMainQuery } from '../../config/db'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { newPostSql } from './post.sql';
 import { post_id } from '../../config/IDGenerator'
-import { DatabaseError } from 'pg';
+import { Result } from 'pg';
 
 let location: string = "/post/new_post";
 
@@ -20,7 +20,7 @@ export const newPost = async (req: Request, res: Response) => {
 
         dbPgMain.query(                             // validate user
             newPostSql.verifyUser, getIDsqlParam,
-            async (errverifyUser: any, resVerifyUser: any) => {
+            async (errverifyUser: Error, resVerifyUser: Result) => {
 
                 if (errverifyUser) {
                     res.status(500).send({
