@@ -108,3 +108,33 @@ export const getPostDetail = {
         p.parent_id = $1
     `
 }
+
+export const newPostReplySql = {
+    simpleInsert : ` 
+    INSERT
+	INTO
+    the_content.posts(
+        post_id,
+        author_id,
+        type,
+        visibility,
+        event_date,
+        latitude,
+        longitude,
+        body,
+        title,
+        parent_id
+    ) VALUES ( 
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8,
+        $9, 
+        $10 
+    );`
+     
+}

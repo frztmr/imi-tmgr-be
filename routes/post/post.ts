@@ -20,5 +20,9 @@ postRouter.get('/detail/:post_id',
     encrypt.decodeCookies,
     postController.detail
 );
+postRouter.post('/new_reply_post',
+    encrypt.decodeCookies,
+    postController.newPostReply
+);
 
 export default postRouter;
