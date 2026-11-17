@@ -8,6 +8,7 @@ import { DatabaseError } from 'pg';
 import { Result } from 'ioredis';
 import { RowDataPacket } from 'mysql2';
 
+const location: string = `/post/simple_post`;
 
 export const getSimplePost = async (req: Request, res: Response) => {
 
@@ -27,7 +28,6 @@ export const getSimplePost = async (req: Request, res: Response) => {
 
                 if (user_id) {                  // validate user
 
-
                     dbPgMain.query(                             // insert post
                         getPostSql.getSimplePost,
                         // user_id,
@@ -38,18 +38,25 @@ export const getSimplePost = async (req: Request, res: Response) => {
                                 res.status(500).send({
                                     msg: "error add post"
                                 });
-                                console.log("caught error at get simple post ", errGetSimplePost);
+                                concol.bright( //error console
+                                    location, timestamp,
+                                    `  unable to gather parent_id ${post_id} :   ${errGetSimplePost}`,
+                                    colorTx.White, colorBg.Red);
 
                             } else {
 
                                 const posts = resGetSimplePost.rows
 
-                                console.log("posts", posts)
+                                // console.log("posts", posts)
                                 res.status(200).send({
                                     msg: "successfully get posts",
                                     posts
                                 });
-
+                                concol.bright(  //success console
+                                    location, timestamp,
+                                    `  successfully gather post_id ${post_id}  `,
+                                    colorTx.White, colorBg.Black
+                                )
                             }
 
                         })
