@@ -35,27 +35,32 @@ export const newPostSql = {
 }
 export const getPostSql = {
     getSimplePost: `
-    SELECT 
+    SELECT
         u.uname,
-        u.public_share_id, 
+        u.public_share_id,
         p.body,
-        p.title,   
+        p.title,
         p.created_at,
         p.visibility,
         p.location_literal,
         p.longitude,
         p.latitude,
         p.like_count,
-        p.reply_count, 
-        p.repost_count, 
+        p.reply_count,
+        p.repost_count,
         p.is_edited,
-        p.post_id  
-    FROM the_content.posts p 
-    LEFT JOIN auth.users u 
-    ON p.author_id = u.id
-    WHERE 
-        p.is_deleted IS NOT TRUE`
-
+        p.post_id,
+        p.created_at,
+        p.event_date
+    FROM
+        the_content.posts p
+    LEFT JOIN auth.users u ON
+        p.author_id = u.id
+    WHERE
+        p.is_deleted IS NOT TRUE
+    ORDER BY
+        created_at DESC, 
+        p.event_date desc;` 
 }
 export const getPostDetail = {
     getOnePost: `
