@@ -23,7 +23,7 @@ const uiController = {
         // if (req.dataToken.psid) {
         // if (company_id) {
         // let sqlParam: [number] = [company_id];
-        db_1.dbPgMainQuery.query(uiQueryPg_1.ui.getSidebarMenu, (err, results) => {
+        db_1.dbPgMain.query(uiQueryPg_1.ui.getSidebarMenu, (err, results) => {
             if (err) { //error catch
                 res.status(500).send("Error 500 at /ui/side_menu");
                 customConsole_1.concol.bright(location, timestamp, "/ui/side_menu => error at sideMenu" + err, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);
@@ -52,7 +52,7 @@ const uiController = {
         // if (req.dataToken.psid) { // spare for authorization variable
         // if (company_id) {
         // let sqlParam: [number] = [company_id];
-        db_1.dbPgMainQuery.query(uiQueryPg_1.ui.getTransactionAction, (err, results) => {
+        db_1.dbPgMain.query(uiQueryPg_1.ui.getTransactionAction, (err, results) => {
             if (err) {
                 res.status(500).send("Error 500 at /ui/trx_action");
                 customConsole_1.concol.bright(location, timestamp, "/ui/side_menu => error at sideMenu" + err, customConsole_1.colorTx.White, customConsole_1.colorBg.Red);

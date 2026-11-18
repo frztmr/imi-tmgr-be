@@ -50,17 +50,27 @@ export const getPostSql = {
         p.repost_count,
         p.is_edited,
         p.post_id,
-        p.created_at,
-        p.event_date
+        p.event_date,
+        p.parent_id,
+        pp.title      AS parent_title,
+        pp.body       AS parent_body,
+        pp.created_at AS parent_created_at,
+        pp.event_date AS parent_event_date,
+        pu.uname      AS parent_uname
     FROM
         the_content.posts p
     LEFT JOIN auth.users u ON
         p.author_id = u.id
+    LEFT JOIN the_content.posts pp ON            -- parent post (only when p is a reply)
+        pp.post_id = p.parent_id
+        AND pp.is_deleted IS NOT TRUE
+    LEFT JOIN auth.users pu ON                   -- parent post author
+        pp.author_id = pu.id
     WHERE
         p.is_deleted IS NOT TRUE
     ORDER BY
-        created_at DESC, 
-        p.event_date desc;` 
+        p.created_at DESC,
+        p.event_date DESC;`
 }
 export const getPostDetail = {
     getOnePost: `
@@ -107,17 +117,31 @@ export const getPostDetail = {
         p.is_edited,
         p.post_id,
         p.parent_id,
-        p.root_id   
-    FROM the_content.posts p 
-    LEFT JOIN auth.users u 
+        p.root_id,
+        p.event_date
+    FROM the_content.posts p
+    LEFT JOIN auth.users u
     ON p.author_id = u.id
-    WHERE  
+    WHERE
         p.parent_id = $1
     `
 }
 
 export const newPostReplySql = {
-    simpleInsert : ` 
+    getPrevReplyValue: `
+    SELECT
+        p.reply_count
+    FROM
+        the_content.posts p
+    WHERE
+        p.post_id = $1
+    `,
+    updateReplyValue: `
+    UPDATE 
+        the_content.posts 
+    SET reply_count = $1 
+    WHERE post_id = $2;`,
+    simpleInsert: ` 
     INSERT
 	INTO
     the_content.posts(
@@ -143,5 +167,5 @@ export const newPostReplySql = {
         $9, 
         $10 
     );`
-     
+
 }

@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { dbPgMainQuery } from '../../config/db'
+import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { ui } from './uiQueryPg';
@@ -22,7 +22,7 @@ const uiController = {
 
         // let sqlParam: [number] = [company_id];
 
-        dbPgMainQuery.query(
+        dbPgMain.query(
             ui.getSidebarMenu,
             (err: any, results: any) => {
                 if (err) { //error catch
@@ -73,7 +73,7 @@ const uiController = {
 
         // let sqlParam: [number] = [company_id];
 
-        dbPgMainQuery.query(
+        dbPgMain.query(
             ui.getTransactionAction,
             (err: any, results: any) => {
                 if (err) {

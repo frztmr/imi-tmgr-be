@@ -32,13 +32,13 @@ export const newPostReply = async (req: Request, res: Response) => {
                         colorTx.White, colorBg.Red);
 
 
-                } else { 
-                      
+                } else {
+
 
                     const user_id: string = resVerifyUser.rows[0].id // validate user 
 
                     if (user_id) {                  // user has been validated.
- 
+
                         if (req.body) {             // validate req.body
 
                             let {
@@ -65,6 +65,41 @@ export const newPostReply = async (req: Request, res: Response) => {
                             } = req.body
 
 
+                            dbPgMain.query(                             // getPrevReplyValue
+                                newPostReplySql.getPrevReplyValue, [parent_id],
+                                async (errGetPrevReplyValue: Error,
+                                    resGetPrevReplyValue: Result) => {
+
+                                    if (errGetPrevReplyValue) {
+
+                                        res.status(500).send({
+                                            msg: "error validate reply!"
+                                        });
+                                        concol.bright(
+                                            location, timestamp,
+                                            "  caught error at add reply: errGetPrevReplyValue: " + errGetPrevReplyValue,
+                                            colorTx.White, colorBg.Red);
+
+                                    } else {
+
+                                        try {
+                                            const repValue = ( // ternary untuk menentukan jumlah value. 
+                                                (resGetPrevReplyValue.rows[0].reply_count) ?
+                                                    (resGetPrevReplyValue.rows[0].reply_count) : 0
+                                            ) + 1; //jika hasilnya ada, gunakan yang ada. jika null, 0
+
+                                            await dbPgMainQuery(newPostReplySql.updateReplyValue,
+                                                [repValue, parent_id]
+                                            )
+                                        } catch (error) {
+                                            concol.bright(
+                                                location, timestamp,
+                                                "  caught error at trycatch edit value reply: " + error,
+                                                colorTx.White, colorBg.Red);
+                                        }
+                                    }
+                                })
+
 
                             const get_post_id: string = await post_id(user_id); //untuk post id
                             let insertPostReplyParam: [
@@ -90,8 +125,7 @@ export const newPostReply = async (req: Request, res: Response) => {
                                     title,          //$9
                                     parent_id       //$10
                                 ];
-
-                            dbPgMain.query(                             // insert post
+                            dbPgMain.query(   // insert post
                                 newPostReplySql.simpleInsert, insertPostReplyParam,
                                 (errInsertSimplePostReply: Error) => {
 
@@ -142,7 +176,7 @@ export const newPostReply = async (req: Request, res: Response) => {
                             location, timestamp,
                             "  caught error at add post: user_id is not verified",
                             colorTx.White, colorBg.Red);
-                    }   
+                    }
                 }
 
 
