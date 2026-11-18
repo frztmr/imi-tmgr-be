@@ -80,7 +80,9 @@ export const getPostDetail = {
         p.is_edited,
         p.post_id,
         p.parent_id,
-        p.root_id   
+        p.root_id,
+        p.created_at,
+        p.event_date   
     FROM the_content.posts p 
     LEFT JOIN auth.users u 
     ON p.author_id = u.id
