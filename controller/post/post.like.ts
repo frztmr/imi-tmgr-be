@@ -34,7 +34,7 @@ export const likeUnlike = async (req: Request, res: Response) => {
                         dbPgMain.query(         // cek status like
                             likePost.getLikeStatus,
                             [post_id, user_id],
-                            (errGetLikeStatus: Error, resGetLikeStatus: any) => {
+                            async (errGetLikeStatus: Error, resGetLikeStatus: any) => {
 
                                 if (errGetLikeStatus) {
 
@@ -53,12 +53,32 @@ export const likeUnlike = async (req: Request, res: Response) => {
                                     try {
 
                                         if (!post_id) { // jika belum dilike
+
+                                            // STEP 1:      
+                                            const prevLikeValue = await dbPgMainQuery(likePost.prevLikeValue, [post_id]) //buat like 
+                                            const likeValue = (                              // ternary untuk menentukan jumlah value. 
+                                                (prevLikeValue.rows[0].like_count) !== 0 ?   // jika value tidak sama dengan nol, 
+                                                    (prevLikeValue.rows[0].like_count) + 1 : // maka kurangi satu
+                                                    1                                        // jika tidak, maka satu 
+                                            )
+                                            dbPgMainQuery(likePost.updateLikeValue, [likeValue, user_id]) //buat ubah angka like, +1 
                                             dbPgMainQuery(likePost.likePost, [post_id, user_id]) //buat like 
+
+
                                         } else { //jika sudah dilike
+
+                                            const prevLikeValue = await dbPgMainQuery(likePost.prevLikeValue, [post_id]) //buat like 
+                                            const likeValue = (                              // ternary untuk menentukan jumlah value. 
+                                                (prevLikeValue.rows[0].like_count) !== 0 ?   // jika value tidak sama dengan nol, 
+                                                    (prevLikeValue.rows[0].like_count) - 1 : // maka kurangi satu
+                                                    0                                        // jika tidak, maka nol   
+                                            )
+                                            dbPgMainQuery(likePost.updateLikeValue, [likeValue, user_id]) //buat unlike,   
                                             dbPgMainQuery(likePost.unlikePost, [post_id, user_id]) //buat unlike 
                                         }
 
                                     } catch (error) {
+
                                         res.status(500).send({
                                             msg: "error like/unlike post!"
                                         });
@@ -66,6 +86,7 @@ export const likeUnlike = async (req: Request, res: Response) => {
                                             location, timestamp,
                                             `  unable to likePost.getStatus :   ${errGetLikeStatus}`,
                                             colorTx.White, colorBg.Red);
+
                                     } finally {
 
                                         // console.log("posts", posts)

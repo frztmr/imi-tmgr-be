@@ -180,15 +180,28 @@ export const likePost = {
         pl.user_id = $2 
     LIMIT 1;
     `,
+    prevLikeValue: `
+    SELECT
+        p.like_count
+    FROM
+        the_content.posts p
+    WHERE
+        p.post_id = $1`, 
+    updateLikeValue: `
+    UPDATE 
+        the_content.posts 
+    SET like_count = $1 
+    WHERE post_id = $2;`, 
     likePost: `
-    UPDATE 
-        the_content.posts 
-    SET reply_count = $1 
-    WHERE post_id = $2;`, 
+    INSERT INTO 
+        social.post_likes 
+        (post_id, user_id ) 
+    VALUES 
+        ($1, $2);`, 
     unlikePost: `
-    UPDATE 
-        the_content.posts 
-    SET reply_count = $1 
-    WHERE post_id = $2;`, 
+    DELETE 
+    FROM 
+        social.post_likes 
+    WHERE post_id = $1 AND pl.user_id = $2 `, 
 
 }

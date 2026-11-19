@@ -26,7 +26,7 @@ postRouter.post('/new_reply_post',
 );
 postRouter.post('/like_unlike/:post_id',
     encrypt.decodeCookies,
-    postController.newPostReply
+    postController.likeUnlike
 );
 
 export default postRouter;
