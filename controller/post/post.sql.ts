@@ -125,8 +125,7 @@ export const getPostDetail = {
     WHERE
         p.parent_id = $1
     `
-}
-
+} 
 export const newPostReplySql = {
     getPrevReplyValue: `
     SELECT
@@ -167,5 +166,29 @@ export const newPostReplySql = {
         $9, 
         $10 
     );`
+
+}
+export const likePost = {
+    getLikeStatus: `
+    SELECT 
+        pl.post_id 
+    FROM 
+        social.post_likes pl 
+    WHERE 
+        pl.post_id = $1 
+        AND 
+        pl.user_id = $2 
+    LIMIT 1;
+    `,
+    likePost: `
+    UPDATE 
+        the_content.posts 
+    SET reply_count = $1 
+    WHERE post_id = $2;`, 
+    unlikePost: `
+    UPDATE 
+        the_content.posts 
+    SET reply_count = $1 
+    WHERE post_id = $2;`, 
 
 }

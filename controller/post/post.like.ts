@@ -1,0 +1,123 @@
+import { Request, Response } from 'express';
+import { dbPgMain, dbPgMainQuery } from '../../config/db'
+// import { } from '../../../config/encrypt'
+import { colorBg, colorTx, concol } from '../../config/customConsole'
+import { newPostSql, likePost } from './post.sql';
+import { DatabaseError } from 'pg';
+import { Result } from 'ioredis';
+
+const location: string = `/post/like_unlike`;
+
+export const likeUnlike = async (req: Request, res: Response) => {
+
+    let date = new Date();
+    let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
+
+    if (req.dataToken.uname) { // cari public share id
+
+        // verify user 
+        let getIDsqlParam: [string] = [req.dataToken.psid];
+
+        dbPgMain.query(                             // validate user
+            newPostSql.verifyUser, getIDsqlParam,
+            async (err: Error, resVerifyUser: any) => {
+
+                const user_id: string = resVerifyUser.rows[0].id // validate user 
+
+                if (user_id) {
+
+                    if (req.params.post_id) {
+
+                        const post_id = req.params.post_id
+                        // validate user
+
+                        dbPgMain.query(         // cek status like
+                            likePost.getLikeStatus,
+                            [post_id, user_id],
+                            (errGetLikeStatus: Error, resGetLikeStatus: any) => {
+
+                                if (errGetLikeStatus) {
+
+                                    res.status(500).send({
+                                        msg: "error get status like/unlike post"
+                                    });
+                                    concol.bright( //error console
+                                        location, timestamp,
+                                        `  unable to likePost.getStatus :   ${errGetLikeStatus}`,
+                                        colorTx.White, colorBg.Red);
+
+                                } else {
+
+                                    const posts = resGetLikeStatus.rows[0].post_id
+
+                                    try {
+
+                                        if (!post_id) { // jika belum dilike
+                                            dbPgMainQuery(likePost.likePost, [post_id, user_id]) //buat like 
+                                        } else { //jika sudah dilike
+                                            dbPgMainQuery(likePost.unlikePost, [post_id, user_id]) //buat unlike 
+                                        }
+
+                                    } catch (error) {
+                                        res.status(500).send({
+                                            msg: "error like/unlike post!"
+                                        });
+                                        concol.bright( //error console
+                                            location, timestamp,
+                                            `  unable to likePost.getStatus :   ${errGetLikeStatus}`,
+                                            colorTx.White, colorBg.Red);
+                                    } finally {
+
+                                        // console.log("posts", posts)
+                                        res.status(200).send({
+                                            msg: "successfully get posts",
+                                            posts
+                                        });
+                                        concol.bright(  //success console
+                                            location, timestamp,
+                                            `  successfully gather post `,
+                                            colorTx.White, colorBg.Black
+                                        )
+
+                                    }
+
+                                }
+
+                            })
+                    } else {
+                        res.status(400).send({
+                            msg: "invalid req param!"
+                        });
+                        concol.bright( //error console
+                            location, timestamp,
+                            `  invalid req param!`,
+                            colorTx.White, colorBg.Red);
+                    }
+
+                } else {
+
+                    res.status(401).send({
+                        msg: "user is invalid!"
+                    })
+                    concol.bright( //error console
+                        location, timestamp,
+                        `  invalid user_id`,
+                        colorTx.White, colorBg.Red);
+                }
+
+
+            })
+
+    } else {
+
+        res.status(401).send({
+            msg: "unauthorized"
+        })
+        concol.bright( //error console
+            location, timestamp,
+            `  invalid user_id`,
+            colorTx.White, colorBg.Red);
+    }
+}
+
+// saya sudah siapkan endpoint api untuk dikirim ke backend. kirim semua data ke: endpoint /post/new

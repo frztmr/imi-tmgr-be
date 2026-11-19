@@ -79,6 +79,10 @@ export const getSimplePost = async (req: Request, res: Response) => {
         res.status(401).send({
             msg: "unauthorized"
         })
+        concol.bright( //error console
+            location, timestamp,
+            `  invalid user_id`,
+            colorTx.White, colorBg.Red);
     }
 }
 
