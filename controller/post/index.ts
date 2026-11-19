@@ -1,8 +1,8 @@
-import { newPost } from "./newPost";
+import { newPost } from "./post.new";
 import { newTag } from "./newTag";
 import { getSimplePost } from './getPost'
 import { detail} from './post.spesific'
-import { newPostReply} from './newPostReply'
+import { newPostReply} from './post.new.reply'
 
 export default {
     newPost,
