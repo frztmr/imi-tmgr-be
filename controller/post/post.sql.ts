@@ -199,9 +199,8 @@ export const likePost = {
     VALUES 
         ($1, $2);`, 
     unlikePost: `
-    DELETE 
-    FROM 
+    DELETE  FROM 
         social.post_likes 
-    WHERE post_id = $1 AND pl.user_id = $2 `, 
+    WHERE post_id = $1 AND  user_id = $2 `, 
 
 }
