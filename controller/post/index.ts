@@ -4,6 +4,7 @@ import { getSimplePost } from './post.get'
 import { detail } from './post.spesific'
 import { newPostReply } from './post.new.reply'
 import { likeUnlike } from './post.like'
+import { bookmarkUnBookmark } from './post.bookmark'
 
 export default {
     newPost,
@@ -11,5 +12,6 @@ export default {
     getSimplePost,
     detail,
     newPostReply,
-    likeUnlike
+    likeUnlike,
+    bookmarkUnBookmark
 };

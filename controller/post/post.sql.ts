@@ -54,10 +54,16 @@ export const getPostSql = {
     p.parent_id, 
     EXISTS (
         SELECT 1
-        FROM social.post_likes spc
-        WHERE spc.post_id = p.post_id
-          AND spc.user_id = $1
+        FROM social.post_likes spl
+        WHERE spl.post_id = p.post_id
+          AND spl.user_id = $1
     ) AS is_liked,
+    EXISTS (
+        SELECT 1
+        FROM social.post_bookmark spb
+        WHERE spb.post_id = p.post_id
+          AND spb.user_id = $1
+        ) AS is_bookmarked,
     pp.title AS parent_title,
     pp.body AS parent_body,
     pp.created_at AS parent_created_at,
@@ -99,10 +105,16 @@ export const getPostDetail = {
         p.event_date,
         EXISTS (
         SELECT 1
-        FROM social.post_likes spc
-        WHERE spc.post_id = p.post_id
-          AND spc.user_id = $2
-        ) AS is_liked  
+        FROM social.post_likes spl
+        WHERE spl.post_id = p.post_id
+          AND spl.user_id = $2
+        ) AS is_liked,
+        EXISTS (
+        SELECT 1
+        FROM social.post_bookmark spb
+        WHERE spb.post_id = p.post_id
+          AND spb.user_id = $2
+        ) AS is_bookmarked  
     FROM the_content.posts p 
     LEFT JOIN auth.users u 
     ON p.author_id = u.id
@@ -131,17 +143,23 @@ export const getPostDetail = {
         p.event_date,
         EXISTS (
         SELECT 1
-        FROM social.post_likes spc
-        WHERE spc.post_id = p.post_id
-          AND spc.user_id = $2
-        ) AS is_liked
+        FROM social.post_likes spl
+        WHERE spl.post_id = p.post_id
+          AND spl.user_id = $2
+        ) AS is_liked,
+        EXISTS (
+        SELECT 1
+        FROM social.post_bookmark spb
+        WHERE spb.post_id = p.post_id
+          AND spb.user_id = $2
+        ) AS is_bookmarked
     FROM the_content.posts p
     LEFT JOIN auth.users u
     ON p.author_id = u.id
     WHERE
         p.parent_id = $1
     `
-} 
+}
 export const newPostReplySql = {
     getPrevReplyValue: `
     SELECT
@@ -202,21 +220,45 @@ export const likePost = {
     FROM
         the_content.posts p
     WHERE
-        p.post_id = $1`, 
+        p.post_id = $1`,
     updateLikeValue: `
     UPDATE 
         the_content.posts 
     SET like_count = $1 
-    WHERE post_id = $2;`, 
+    WHERE post_id = $2;`,
     likePost: `
     INSERT INTO 
         social.post_likes 
         (post_id, user_id ) 
     VALUES 
-        ($1, $2);`, 
+        ($1, $2);`,
     unlikePost: `
     DELETE  FROM 
         social.post_likes 
-    WHERE post_id = $1 AND  user_id = $2 `, 
+    WHERE post_id = $1 AND  user_id = $2 `,
+
+}
+export const bookmarkPost = {
+    getBookmarkStatus: `
+    SELECT 
+        pl.post_id 
+    FROM 
+        social.post_bookmark spb 
+    WHERE 
+        spb.post_id = $1 
+        AND 
+        spb.user_id = $2 
+    LIMIT 1;
+    `, 
+    likePost: `
+    INSERT INTO 
+        social.post_likes 
+        (post_id, user_id ) 
+    VALUES 
+        ($1, $2);`,
+    unlikePost: `
+    DELETE  FROM 
+        social.post_likes 
+    WHERE post_id = $1 AND  user_id = $2 `,
 
 }
