@@ -30,7 +30,7 @@ export const getSimplePost = async (req: Request, res: Response) => {
 
                     dbPgMain.query(                             // insert post
                         getPostSql.getSimplePost,
-                        // user_id,
+                        [user_id],
                         (errGetSimplePost: Error, resGetSimplePost: any) => {
 
                             if (errGetSimplePost) {

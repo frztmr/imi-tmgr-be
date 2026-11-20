@@ -43,7 +43,7 @@ export const detail = async (req: Request, res: Response) => {
 
                         dbPgMain.query(              //gather post pareng       
                             getPostDetail.getOnePost,
-                            [post_id],
+                            [post_id, user_id],
                             async (errGetOnePostParent: Error, resGetOnePostParent: any) => {
 
 
@@ -63,7 +63,7 @@ export const detail = async (req: Request, res: Response) => {
 
                                     dbPgMain.query(              //gather post pareng       
                                         getPostDetail.getPostRoot,
-                                        [post_id],
+                                        [post_id, user_id],
                                         async (errGetOnePostRoot: Error, resGetOnePostParentRoot: any) => {
 
                                             if (errGetOnePostRoot) {
