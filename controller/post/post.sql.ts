@@ -262,3 +262,11 @@ export const bookmarkPost = {
     WHERE post_id = $1 AND  user_id = $2 `,
 
 }
+export const postDeleteSql = {
+    deletePost: `
+    UPDATE 
+        the_content.posts 
+    SET is_deleted = TRUE 
+    WHERE post_id = $2; `,
+
+}

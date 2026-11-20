@@ -5,6 +5,7 @@ import { detail } from './post.spesific'
 import { newPostReply } from './post.new.reply'
 import { likeUnlike } from './post.like'
 import { bookmarkUnBookmark } from './post.bookmark'
+import { postDelete } from './post.delete'
 
 export default {
     newPost,
@@ -13,5 +14,6 @@ export default {
     detail,
     newPostReply,
     likeUnlike,
-    bookmarkUnBookmark
+    bookmarkUnBookmark,
+    postDelete
 };

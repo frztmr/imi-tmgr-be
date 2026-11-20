@@ -34,4 +34,9 @@ postRouter.post('/bookmark/:post_id',
     postController.bookmarkUnBookmark
 );
 
+postRouter.post('/delete/:post_id',
+    encrypt.decodeCookies,
+    postController.postDelete
+);
+
 export default postRouter;
