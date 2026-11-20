@@ -241,7 +241,7 @@ export const likePost = {
 export const bookmarkPost = {
     getBookmarkStatus: `
     SELECT 
-        pl.post_id 
+        spb.post_id 
     FROM 
         social.post_bookmark spb 
     WHERE 
@@ -250,15 +250,15 @@ export const bookmarkPost = {
         spb.user_id = $2 
     LIMIT 1;
     `, 
-    likePost: `
+    bookmarkPost: `
     INSERT INTO 
-        social.post_likes 
+        social.post_bookmark 
         (post_id, user_id ) 
     VALUES 
         ($1, $2);`,
-    unlikePost: `
+    unBookmarkPost: `
     DELETE  FROM 
-        social.post_likes 
+        social.post_bookmark 
     WHERE post_id = $1 AND  user_id = $2 `,
 
 }

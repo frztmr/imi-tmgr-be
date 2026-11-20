@@ -48,64 +48,45 @@ export const bookmarkUnBookmark = async (req: Request, res: Response) => {
                                     if (errGetLikeStatus) {
 
                                         res.status(500).send({
-                                            msg: "error get status like/unlike post"
+                                            msg: "error get status bookmarkPost.getBookmarkStatus"
                                         });
                                         concol.bright( //error console
                                             location, timestamp,
-                                            `  unable to likePost.getStatus :   ${errGetLikeStatus}`,
+                                            `  unable to bookmarkPost.getBookmarkStatus :   ${errGetLikeStatus}`,
                                             colorTx.White, colorBg.Red);
 
                                     } else {
 
-                                        const posts = await (resGetLikeStatus.rows[0])
-                                        console.log("posts", posts)
-                                        console.log("post_id", post_id)
+                                        const posts = await (resGetLikeStatus.rows[0]) 
 
                                         try {
 
                                             if (!posts) { // jika belum dilike, tambah like
-
-                                                // STEP 1:      
-                                                // const prevLikeValue = await dbPgMainQuery(bookmarkPost.prevLikeValue, [post_id]) //buat like 
-                                                // const likeValue = await (                       // ternary untuk menentukan jumlah value. 
-                                                //     (prevLikeValue.rows[0].like_count) !== 0 ?   // jika value tidak sama dengan nol, 
-                                                //         (prevLikeValue.rows[0].like_count) + 1 : // maka kurangi satu
-                                                //         1                                        // jika tidak, maka satu 
-                                                // ) 
-                                                await dbPgMainQuery(bookmarkPost.likePost, [post_id, user_id]) //buat like 
-                                                // await dbPgMainQuery(bookmarkPost.updateLikeValue, [likeValue, post_id]) //buat ubah angka like, +1 
+ 
+                                                await dbPgMainQuery(bookmarkPost.bookmarkPost, [post_id, user_id]) //buat like  
 
                                                 res.status(200).send({
-                                                    msg: "successfully get posts",
+                                                    msg: "successfully bookmark!",
                                                     posts
                                                 });
                                                 concol.bright(  //success console
                                                     location, timestamp,
-                                                    `  successfully gather post `,
+                                                    `  successfully bookmark post `,
                                                     colorTx.White, colorBg.Black
                                                 )
 
                                             } else { //jika sudah dilike, kurangi like
 
-
-                                                // const prevLikeValue = await dbPgMainQuery(bookmarkPost.prevLikeValue, [post_id]) //buat like 
-                                                // const likeValue = await (                        // ternary untuk menentukan jumlah value. 
-                                                //     (prevLikeValue.rows[0].like_count) !== 0 ?   // jika value tidak sama dengan nol, 
-                                                //         (prevLikeValue.rows[0].like_count) - 1 : // maka kurangi satu
-                                                //         0                                        // jika tidak, maka nol   
-                                                // )
-                                                // console.log("likeValue@unlike", likeValue)
-                                                await dbPgMainQuery(bookmarkPost.unlikePost, [post_id, user_id]) //buat unlike 
-                                                // await dbPgMainQuery(bookmarkPost.updateLikeValue, [likeValue, post_id]) //buat unlike,   
-
-
+ 
+                                                await dbPgMainQuery(bookmarkPost.unBookmarkPost, [post_id, user_id]) //buat unlike 
+ 
                                                 res.status(200).send({
-                                                    msg: "successfully get posts",
+                                                    msg: "successfully bookmark posts",
                                                     posts
                                                 });
                                                 concol.bright(  //success console
                                                     location, timestamp,
-                                                    `  successfully gather post `,
+                                                    `  successfully bookmark post `,
                                                     colorTx.White, colorBg.Black
                                                 )
                                             }
@@ -113,11 +94,11 @@ export const bookmarkUnBookmark = async (req: Request, res: Response) => {
                                         } catch (error) {
 
                                             res.status(500).send({
-                                                msg: "error like/unlike post!"
+                                                msg: "error bookmark/unbookmark post!"
                                             });
                                             concol.bright( //error console
                                                 location, timestamp,
-                                                `  unable to likePost.getStatus :   ${errGetLikeStatus}`,
+                                                `  unable to bookmark : ${error}`,
                                                 colorTx.White, colorBg.Red);
 
                                         }

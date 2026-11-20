@@ -28,7 +28,8 @@ postRouter.post('/like_unlike/:post_id',
     encrypt.decodeCookies,
     postController.likeUnlike
 );
-postRouter.post('/bookmark_unbookmark/:post_id',
+
+postRouter.post('/bookmark/:post_id',
     encrypt.decodeCookies,
     postController.bookmarkUnBookmark
 );
