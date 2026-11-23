@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { newPostSql, getPostDetail } from './post.sql';
+import { newPostSql, getPostDetail, postFileSql } from './post.sql';
 // import { post_id } from '../../config/IDGenerator'
 import { Result } from 'pg';
 
@@ -80,10 +80,15 @@ export const detail = async (req: Request, res: Response) => {
 
                                             } else {
 
+                                                // file (photo/attachment) milik post ini. url: /post/file/:file_id
+                                                const resFiles = await dbPgMainQuery(postFileSql.getFilesByPost, [post_id])
+                                                    .catch(() => ({ rows: [] }));
+
                                                 res.status(200).send({
                                                     msg: `successfully gather post_id ${post_id} `,
                                                     post_parent: resGetOnePostParent.rows,
-                                                    post_root: resGetOnePostParentRoot.rows
+                                                    post_root: resGetOnePostParentRoot.rows,
+                                                    files: resFiles.rows
                                                 })
                                                 concol.bright(  //success console
                                                     location, timestamp,

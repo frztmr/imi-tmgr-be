@@ -290,3 +290,111 @@ export const postDeleteSql = {
     WHERE post_id = $1; `,
 
 }
+// file upload untuk post (photo & attachment). DDL ada di database/post_files.sql
+export const postFileSql = {
+    insertFile: `
+    INSERT INTO the_content.post_files (
+        file_id,
+        uploader_id,
+        kind,
+        status,
+        original_name,
+        ext,
+        mime,
+        size_bytes,
+        tmp_path
+    ) VALUES ( $1, $2, $3, 'queued', $4, $5, $6, $7, $8 );`,
+    setProcessing: `
+    UPDATE the_content.post_files
+    SET status = 'processing'
+    WHERE file_id = $1;`,
+    setReady: `
+    UPDATE the_content.post_files
+    SET
+        status = 'ready',
+        storage_path = $2,
+        mime = $3,
+        metadata = $4,
+        tmp_path = NULL,
+        error = NULL,
+        processed_at = NOW()
+    WHERE file_id = $1;`,
+    setFailed: `
+    UPDATE the_content.post_files
+    SET
+        status = 'failed',
+        error = $2,
+        tmp_path = NULL,
+        processed_at = NOW()
+    WHERE file_id = $1;`,
+    getPending: `
+    SELECT
+        f.file_id,
+        f.tmp_path,
+        f.ext,
+        f.kind
+    FROM the_content.post_files f
+    WHERE
+        f.status IN ('queued', 'processing')
+        AND f.tmp_path IS NOT NULL
+        AND f.is_deleted IS NOT TRUE
+    ORDER BY f.created_at ASC;`,
+    getStatus: `
+    SELECT
+        f.file_id,
+        f.kind,
+        f.status,
+        f.original_name,
+        f.size_bytes,
+        f.post_id,
+        f.error,
+        f.created_at,
+        f.processed_at
+    FROM the_content.post_files f
+    WHERE
+        f.file_id = ANY($1::varchar[])
+        AND f.uploader_id = $2
+        AND f.is_deleted IS NOT TRUE;`,
+    attachToPost: `
+    UPDATE the_content.post_files
+    SET post_id = $1
+    WHERE
+        file_id = ANY($2::varchar[])
+        AND uploader_id = $3
+        AND post_id IS NULL
+        AND status <> 'failed'
+        AND is_deleted IS NOT TRUE
+    RETURNING file_id;`,
+    getFileForDownload: `
+    SELECT
+        f.file_id,
+        f.uploader_id,
+        f.status,
+        f.storage_path,
+        f.mime,
+        f.original_name,
+        f.kind,
+        f.post_id,
+        p.is_deleted AS post_is_deleted
+    FROM the_content.post_files f
+    LEFT JOIN the_content.posts p
+        ON p.post_id = f.post_id
+    WHERE
+        f.file_id = $1
+        AND f.is_deleted IS NOT TRUE
+    LIMIT 1;`,
+    getFilesByPost: `
+    SELECT
+        f.file_id,
+        f.kind,
+        f.original_name,
+        f.mime,
+        f.size_bytes,
+        f.metadata
+    FROM the_content.post_files f
+    WHERE
+        f.post_id = $1
+        AND f.status = 'ready'
+        AND f.is_deleted IS NOT TRUE
+    ORDER BY f.created_at ASC;`,
+}

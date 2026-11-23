@@ -34,6 +34,7 @@ import { tusServer } from "./middleware/tus";
 import { PORT } from './config/enviroment'
 
 import { middleware } from "./middleware/middleware";
+import { postFilePool } from "./worker/postFile.pool";
 
 import { colorBg, colorTx, consoleBright, consoleReverse, concol } from './config/customConsole'
 
@@ -105,6 +106,11 @@ App.get("/", (req: Request, res: Response) => {
 // finally, register to middleware. 
 // WHY? this makes your code easily maintainable. 
 middleware(App)
+
+// worker thread untuk proses file upload post (node worker_threads, tanpa Redis)
+// recoverPending: lanjutkan file yang belum selesai diproses sebelum API restart
+postFilePool.start();
+postFilePool.recoverPending();
 
 //open and running at port:
 // later you can make NGINX reverse proxy to here. 

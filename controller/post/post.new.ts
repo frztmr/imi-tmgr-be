@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { newPostSql } from './post.sql';
+import { newPostSql, postFileSql } from './post.sql';
 import { post_id } from '../../config/IDGenerator'
 import { Result } from 'pg';
 
@@ -86,7 +86,7 @@ export const newPost = async (req: Request, res: Response) => {
 
                             dbPgMain.query(                             // insert post
                                 newPostSql.insertSimplePost, insertPostParam,
-                                (errInsertSimplePost: Error) => {
+                                async (errInsertSimplePost: Error) => {
 
                                     if (errInsertSimplePost) {
 
@@ -100,8 +100,32 @@ export const newPost = async (req: Request, res: Response) => {
 
                                     } else {
 
+                                        // tempelkan file yang sudah diupload (/post/upload_file) ke post ini
+                                        const fileIds: string[] = [
+                                            ...(Array.isArray(photos) ? photos : []),
+                                            ...(Array.isArray(attachments) ? attachments : []),
+                                        ].filter((id: any) => typeof id === "string" && /^[A-Za-z0-9]{1,32}$/.test(id));
+
+                                        let attached: string[] = [];
+                                        if (fileIds.length > 0) {
+                                            try {
+                                                const resAttach = await dbPgMainQuery(
+                                                    postFileSql.attachToPost,
+                                                    [get_post_id, fileIds, String(user_id)]
+                                                );
+                                                attached = resAttach.rows.map((r: any) => r.file_id);
+                                            } catch (errAttach) {
+                                                concol.bright(
+                                                    "/post/new_post", timestamp,
+                                                    "  post added but failed attach files " + errAttach,
+                                                    colorTx.White, colorBg.Red);
+                                            }
+                                        }
+
                                         res.status(200).send({
-                                            msg: "successfully added"
+                                            msg: "successfully added",
+                                            post_id: get_post_id,
+                                            attached_files: attached
                                         });
                                         concol.bright(
                                             location, timestamp,

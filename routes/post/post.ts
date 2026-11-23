@@ -1,6 +1,7 @@
 import express from "express";
 import { postController } from '../../controller/';
 import encrypt from "../../config/encrypt";
+import { uploadPostFiles } from "../../config/postUploader";
 
 const postRouter = express.Router();
 
@@ -35,4 +36,28 @@ postRouter.delete('/delete/:post_id',
     postController.postDelete
 );
 
+// upload file post (photo / attachment). diproses di background oleh worker thread
+postRouter.post('/upload_file',
+    encrypt.decodeCookies,
+    uploadPostFiles,            // multer: simpan ke storage/tmp
+    postController.uploadFile   // insert DB + masuk antrian worker
+);
+postRouter.get('/upload_status',
+    encrypt.decodeCookies,
+    postController.uploadStatus
+);
+postRouter.get('/file/:file_id',
+    encrypt.decodeCookies,
+    postController.getFile
+);
+
 export default postRouter;
+
+/*
+
+  POST /post/upload_file',
+ get /post/upload_status
+ get /post/file/:file_id 
+);
+
+*/
