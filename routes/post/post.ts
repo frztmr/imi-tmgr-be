@@ -7,10 +7,32 @@ const postRouter = express.Router();
 postRouter.post('/new_post',
     encrypt.decodeCookies,
     postController.newPost
-);
-postRouter.post('/new_tag',
+); 
+postRouter.get('/simple_post',
     encrypt.decodeCookies,
-    postController.newTag
+    postController.getSimplePost
+);
+postRouter.get('/detail/:post_id',
+    encrypt.decodeCookies,
+    postController.detail
+);
+postRouter.post('/new_reply_post',
+    encrypt.decodeCookies,
+    postController.newPostReply
+);
+postRouter.post('/like_unlike/:post_id',
+    encrypt.decodeCookies,
+    postController.likeUnlike
+);
+
+postRouter.post('/bookmark/:post_id',
+    encrypt.decodeCookies,
+    postController.bookmarkUnBookmark
+);
+
+postRouter.delete('/delete/:post_id',
+    encrypt.decodeCookies,
+    postController.postDelete
 );
 
 export default postRouter;

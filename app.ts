@@ -26,6 +26,8 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { dbIod, dbHots, dbPgMainQuery, dbPgMain } from './config/db';
+import { tusServer } from "./middleware/tus";
+
 
 // import { error } from "console";
 
@@ -63,6 +65,11 @@ App.use(cors({
         "http://172.16.32.110",
         "http://172.16.32.110/",
         "http://172.16.32.110:80",
+       
+        // Ini view  di 110
+        "http://172.16.32.252",
+        "http://172.16.32.252/",
+        "http://172.16.32.252:80",
     ],
 
     //http only request
@@ -73,7 +80,7 @@ App.use(express.json());
 App.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },  // Override default policy
 }))
-App.use('/public', express.static('public'));
+App.use('/open_area', express.static('open_area'));
 /* =================================================================== */
 
 
@@ -104,7 +111,7 @@ middleware(App)
 App.listen(PORT, () => {
     consoleReverse(
         mainLocation, timestamp,
-        ` ICA Stock Mgmt API is running at port: ${PORT} `,
+        ` IMI-TMGR-DM-SF API is running at port: ${PORT} `,
         colorTx.Green, colorBg.White
     )
 });

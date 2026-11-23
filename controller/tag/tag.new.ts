@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { newPostSql } from './post.sql';
+import { newTagSql } from './tag.sql';
 
 export const newTag = async (req: Request, res: Response) => {
 

@@ -83,7 +83,7 @@ export const keepLogin = async (req: Request, res: Response) => {
 
                                     let rawDataToken: any = {
                                         uname: results.rows[0].uname,
-                                        uID: results.rows[0].public_share_id
+                                        psid: results.rows[0].public_share_id
                                     }
 
                                     const tokek = await encrypt.setCookie(res, rawDataToken, results.rows[0].stay_log_for);

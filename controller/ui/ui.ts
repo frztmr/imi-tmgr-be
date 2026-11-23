@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { dbPgMainQuery } from '../../config/db'
+import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
 import { ui } from './uiQueryPg';
@@ -16,13 +16,13 @@ const uiController = {
         let date = new Date();
         let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
 
-        // if (req.dataToken.uid) {
+        // if (req.dataToken.psid) {
 
         // if (company_id) {
 
         // let sqlParam: [number] = [company_id];
 
-        dbPgMainQuery.query(
+        dbPgMain.query(
             ui.getSidebarMenu,
             (err: any, results: any) => {
                 if (err) { //error catch
@@ -66,14 +66,14 @@ const uiController = {
         let date = new Date();
         let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
 
-        // if (req.dataToken.uid) { // spare for authorization variable
+        // if (req.dataToken.psid) { // spare for authorization variable
 
 
         // if (company_id) {
 
         // let sqlParam: [number] = [company_id];
 
-        dbPgMainQuery.query(
+        dbPgMain.query(
             ui.getTransactionAction,
             (err: any, results: any) => {
                 if (err) {
