@@ -54,6 +54,12 @@ export const getPostSql = {
     p.parent_id, 
     EXISTS (
         SELECT 1
+        FROM auth.users au 
+        WHERE au.id = p.author_id 
+          AND au.id = $1
+    ) AS is_deletable,
+    EXISTS (
+        SELECT 1
         FROM social.post_likes spl
         WHERE spl.post_id = p.post_id
           AND spl.user_id = $1
@@ -104,16 +110,22 @@ export const getPostDetail = {
         p.created_at,
         p.event_date,
         EXISTS (
-        SELECT 1
-        FROM social.post_likes spl
-        WHERE spl.post_id = p.post_id
-          AND spl.user_id = $2
-        ) AS is_liked,
+            SELECT 1
+            FROM auth.users au 
+            WHERE au.id = p.author_id 
+          AND au.id = $1
+        ) AS is_deletable,
         EXISTS (
-        SELECT 1
-        FROM social.post_bookmark spb
-        WHERE spb.post_id = p.post_id
-          AND spb.user_id = $2
+            SELECT 1
+            FROM social.post_likes spl
+            WHERE spl.post_id = p.post_id
+            AND spl.user_id = $2
+            ) AS is_liked,
+        EXISTS (
+            SELECT 1
+            FROM social.post_bookmark spb
+            WHERE spb.post_id = p.post_id
+            AND spb.user_id = $2
         ) AS is_bookmarked  
     FROM the_content.posts p 
     LEFT JOIN auth.users u 
@@ -142,22 +154,30 @@ export const getPostDetail = {
         p.root_id,
         p.event_date,
         EXISTS (
-        SELECT 1
-        FROM social.post_likes spl
-        WHERE spl.post_id = p.post_id
-          AND spl.user_id = $2
-        ) AS is_liked,
+            SELECT 1
+            FROM auth.users au 
+            WHERE au.id = p.author_id 
+            AND au.id = $1
+            ) AS is_deletable,
         EXISTS (
-        SELECT 1
-        FROM social.post_bookmark spb
-        WHERE spb.post_id = p.post_id
-          AND spb.user_id = $2
-        ) AS is_bookmarked
+            SELECT 1
+            FROM social.post_likes spl
+            WHERE spl.post_id = p.post_id
+            AND spl.user_id = $2
+            ) AS is_liked,
+        EXISTS (
+            SELECT 1
+            FROM social.post_bookmark spb
+            WHERE spb.post_id = p.post_id
+            AND spb.user_id = $2
+            ) AS is_bookmarked
     FROM the_content.posts p
     LEFT JOIN auth.users u
     ON p.author_id = u.id
     WHERE
         p.parent_id = $1
+        AND 
+        p.is_deleted IS NOT TRUE
     `
 }
 export const newPostReplySql = {
@@ -267,6 +287,6 @@ export const postDeleteSql = {
     UPDATE 
         the_content.posts 
     SET is_deleted = TRUE 
-    WHERE post_id = $2; `,
+    WHERE post_id = $1; `,
 
 }

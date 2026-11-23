@@ -7,7 +7,7 @@ import { newPostSql, postDeleteSql } from './post.sql';
 import { DatabaseError } from 'pg';
 import { Result } from 'ioredis';
 
-const location: string = `/post/bookmark_unbookmark`;
+const location: string = `/post/delete`;
 
 export const postDelete = async (req: Request, res: Response) => {
 
@@ -44,49 +44,29 @@ export const postDelete = async (req: Request, res: Response) => {
                             dbPgMain.query(         // cek status like, sudah dilike apa belum
                                 postDeleteSql.deletePost,
                                 [post_id],
-                                async (errGetLikeStatus: Error, resGetLikeStatus: any) => {
+                                async (errDeletePost: Error,) => {
 
-                                    if (errGetLikeStatus) {
+                                    if (errDeletePost) {
 
                                         res.status(500).send({
-                                            msg: "error get status bookmarkPost.getBookmarkStatus"
+                                            msg: "error get status postDeleteSql.deletePost"
                                         });
                                         concol.bright( //error console
                                             location, timestamp,
-                                            `  unable to bookmarkPost.getBookmarkStatus :   ${errGetLikeStatus}`,
+                                            `  unable to postDeleteSql.deletePost :  ${errDeletePost}`,
                                             colorTx.White, colorBg.Red);
 
                                     } else {
 
-                                        const posts = await (resGetLikeStatus.rows[0])
+                                        res.status(200).send({
+                                            msg: "successfully delete posts",
 
-                                        try {
-
-
-                                            await dbPgMainQuery(postDeleteSql.deletePost, [post_id, user_id]) //buat unlike 
-
-                                            res.status(200).send({
-                                                msg: "successfully bookmark posts",
-                                                posts
-                                            });
-                                            concol.bright(  //success console
-                                                location, timestamp,
-                                                `  successfully bookmark post `,
-                                                colorTx.White, colorBg.Black
-                                            )
-
-
-                                        } catch (error) {
-
-                                            res.status(500).send({
-                                                msg: "error bookmark/unbookmark post!"
-                                            });
-                                            concol.bright( //error console
-                                                location, timestamp,
-                                                `  unable to bookmark : ${error}`,
-                                                colorTx.White, colorBg.Red);
-
-                                        }
+                                        });
+                                        concol.bright(  //success console
+                                            location, timestamp,
+                                            `  successfully delete posts `,
+                                            colorTx.White, colorBg.Black
+                                        )
 
                                     }
 
