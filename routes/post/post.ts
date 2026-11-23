@@ -7,11 +7,7 @@ const postRouter = express.Router();
 postRouter.post('/new_post',
     encrypt.decodeCookies,
     postController.newPost
-);
-postRouter.post('/new_tag',
-    encrypt.decodeCookies,
-    postController.newTag
-);
+); 
 postRouter.get('/simple_post',
     encrypt.decodeCookies,
     postController.getSimplePost
