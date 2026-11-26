@@ -55,9 +55,10 @@ export default postRouter;
 
 /*
 
-  POST /post/upload_file',
- get /post/upload_status
- get /post/file/:file_id 
+    POST /post/upload_file  
+    GET  /post/upload_status
+    GET  /post/file/:file_id  
+     
 );
 
 */
