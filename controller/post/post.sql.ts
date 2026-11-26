@@ -33,6 +33,28 @@ export const newPostSql = {
     );`,
 
 }
+// kolom "files" untuk setiap post: array photo & attachment yang sudah 'ready'.
+// dipakai di feed (getSimplePost) & detail (getOnePost, getPostRoot).
+// FE: tampilkan dengan url => GET /post/file/:file_id
+const postFilesColumn = `
+    COALESCE((
+        SELECT json_agg(
+            json_build_object(
+                'file_id', f.file_id,
+                'kind', f.kind,
+                'original_name', f.original_name,
+                'mime', f.mime,
+                'size_bytes', f.size_bytes,
+                'url', '/post/file/' || f.file_id,
+                'metadata', f.metadata
+            ) ORDER BY f.created_at ASC
+        )
+        FROM the_content.post_files f
+        WHERE f.post_id = p.post_id
+          AND f.status = 'ready'
+          AND f.is_deleted IS NOT TRUE
+    ), '[]'::json) AS files`;
+
 export const getPostSql = {
     getSimplePost: `
     SELECT
@@ -70,6 +92,7 @@ export const getPostSql = {
         WHERE spb.post_id = p.post_id
           AND spb.user_id = $1
         ) AS is_bookmarked,
+    ${postFilesColumn},
     pp.title AS parent_title,
     pp.body AS parent_body,
     pp.created_at AS parent_created_at,
@@ -126,7 +149,8 @@ export const getPostDetail = {
             FROM social.post_bookmark spb
             WHERE spb.post_id = p.post_id
             AND spb.user_id = $2
-        ) AS is_bookmarked  
+        ) AS is_bookmarked,
+        ${postFilesColumn}
     FROM the_content.posts p 
     LEFT JOIN auth.users u 
     ON p.author_id = u.id
@@ -170,7 +194,8 @@ export const getPostDetail = {
             FROM social.post_bookmark spb
             WHERE spb.post_id = p.post_id
             AND spb.user_id = $2
-            ) AS is_bookmarked
+            ) AS is_bookmarked,
+            ${postFilesColumn}
     FROM the_content.posts p
     LEFT JOIN auth.users u
     ON p.author_id = u.id
