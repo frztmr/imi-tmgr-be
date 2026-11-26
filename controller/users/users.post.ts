@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { dbPgMain, dbPgMainQuery } from '../../config/db'
 // import { } from '../../../config/encrypt'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { getProfile } from './profile.sql';
+import { getProfile } from './users.sql';
 
-export const getProfileInfo = async (req: Request, res: Response) => {
+export const getUsersPost = async (req: Request, res: Response) => {
 
     let date = new Date();
     let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';

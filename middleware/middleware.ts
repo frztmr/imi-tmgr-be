@@ -4,7 +4,8 @@ import {
     authRouter,
     uiRouter,
     postRouter,
-    tagRouter
+    tagRouter,
+    usersRouter,
     // you can add more. please add here first
 } from '../routes/' // this router is connected to index.ts
 
@@ -16,6 +17,7 @@ export const middleware =
         App.use('/ui', uiRouter);
         App.use('/post', postRouter);
         App.use('/tag', tagRouter);
+        App.use('/users', usersRouter);
         // you can add more. 
 
     }

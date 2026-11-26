@@ -8,4 +8,5 @@ export const getProfile = {
         u.public_share_id = $1  
     LIMIT 1;
     }`,
+    
 }
