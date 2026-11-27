@@ -36,7 +36,7 @@ export const newPostSql = {
 // kolom "files" untuk setiap post: array photo & attachment yang sudah 'ready'.
 // dipakai di feed (getSimplePost) & detail (getOnePost, getPostRoot).
 // FE: tampilkan dengan url => GET /post/file/:file_id
-const postFilesColumn = `
+export const postFilesColumn = `
     COALESCE((
         SELECT json_agg(
             json_build_object(

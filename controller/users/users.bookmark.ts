@@ -1,30 +1,41 @@
 import { Request, Response } from 'express';
-import { dbPgMain, dbPgMainQuery } from '../../config/db'
-// import { } from '../../../config/encrypt'
+import { dbPgMainQuery } from '../../config/db'
 import { colorBg, colorTx, concol } from '../../config/customConsole'
-import { getProfile } from './users.sql';
+import { usersBookmarkSql } from './users.sql';
+import { getMyUserId, getPaging, getTimestamp } from './users.helper';
 
+const location: string = "/users/bookmark";
+
+// GET /users/bookmark?limit=&offset=
+// bookmark itu privat: selalu milik user yang login (?uname diabaikan)
+// bentuk row sama dengan /post/simple_post (termasuk "files")
 export const getUsersBookmark = async (req: Request, res: Response) => {
 
-    let date = new Date();
-    let timestamp = colorTx.Blue + date.toLocaleDateString('id') + ' ' + date.toLocaleTimeString('id') + ' => ';
+    const timestamp = getTimestamp();
 
     try {
 
-        const resVerifyUser = await dbPgMainQuery(getProfile.verifyUser, [req.dataToken.psid]);
-        const user_id = resVerifyUser.rows[0]?.id;
+        const user_id = await getMyUserId(req);
 
         if (!user_id) {
             res.status(401).send({ msg: "user is invalid!" });
             return; // jika user id invalid, maka berhenti di sini
         }
 
+        const { limit, offset } = getPaging(req);
 
+        const resBookmarks = await dbPgMainQuery(usersBookmarkSql.getUserBookmarks, [user_id, limit, offset]);
 
-        
+        res.status(200).send({
+            msg: "successfully get bookmarks",
+            posts: resBookmarks.rows,
+            limit,
+            offset,
+        });
+        concol.bright(location, timestamp, `  successfully get ${resBookmarks.rows.length} bookmark(s) `, colorTx.White, colorBg.Black);
+
     } catch (error) {
-
+        res.status(500).send({ msg: "error get bookmarks" });
+        concol.bright(location, timestamp, `  caught error at get bookmarks: ${error}`, colorTx.White, colorBg.Red);
     }
 }
-
-// saya sudah siapkan endpoint api untuk dikirim ke backend. kirim semua data ke: endpoint /post/new
